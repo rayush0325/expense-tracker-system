@@ -15,10 +15,12 @@ export default function Hello() {
 
         try {
             const response = await apiClient.get('/hello');
+            console.log("try")
+            console.log(response.data)
             setMessage(response.data.message);
         } catch (error) {
-            console.log(error.message);
-            setMessage(error.message);
+            console.log("catch");
+            setMessage(`${error.response.data.title} status = ${error.response.status}`);
         }
     }   
 

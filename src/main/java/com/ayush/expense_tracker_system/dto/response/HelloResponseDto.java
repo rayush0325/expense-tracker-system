@@ -1,4 +1,4 @@
-package com.ayush.expense_tracker_system.dto;
+package com.ayush.expense_tracker_system.dto.response;
 
 public class HelloResponseDto {
     private final String message;
