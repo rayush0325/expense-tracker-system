@@ -12,14 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloController {
 
     @GetMapping("api/hello")
-    public HelloResponseDto hello(){
-        throw new RuntimeException("error occurred at runtime");
-//        return new HelloResponseDto("hello from backend");
+    public HelloResponseDto hello() {
+//        throw new Exception("unknown exception");
+//        throw new NullPointerException("null pointer exception not handled locally ");
+        throw new ArithmeticException("arithmetic exception  handled locally ");
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(ArithmeticException.class)
     public ResponseEntity<ErrorResponse> handleException(Exception exception){
-        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage() + " local exception");
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errorResponse);
