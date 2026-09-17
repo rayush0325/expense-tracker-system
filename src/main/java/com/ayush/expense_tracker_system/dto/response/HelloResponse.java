@@ -1,9 +1,9 @@
 package com.ayush.expense_tracker_system.dto.response;
 
-public class HelloResponseDto {
+public class HelloResponse {
     private final String message;
 
-    public HelloResponseDto(String message) {
+    public HelloResponse(String message) {
         this.message = message;
     }
 
