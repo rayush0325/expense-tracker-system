@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.*;
 public class HelloController {
 
     @GetMapping("api/hello")
-    public HelloResponse hello() {
+    public ResponseEntity<HelloResponse> hello() {
 //        throw new Exception("unknown exception");
 //        throw new NullPointerException("null pointer exception not handled locally ");
-        throw new ArithmeticException("arithmetic exception  handled locally ");
+//        throw new ArithmeticException("arithmetic exception  handled locally ");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new HelloResponse("hello from backend"));
     }
 
     @GetMapping("api/customHello")
