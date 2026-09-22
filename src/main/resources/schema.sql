@@ -11,3 +11,5 @@ create table users(
     CONSTRAINT uq_users_email UNIQUE (email)
 );
 desc users;
+
+drop users;
