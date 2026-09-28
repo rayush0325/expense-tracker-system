@@ -20,7 +20,7 @@ public class UserServiceTest {
     private final UserService userService;
     UserRepository mockUserRepository;
     PasswordEncoder mockPasswordEncoder;
-    private final String MAIL = "test@mail.com";
+
 
     public UserServiceTest() {
         mockUserRepository = mock(UserRepository.class);
@@ -33,7 +33,7 @@ public class UserServiceTest {
 
         RegisterRequest registerRequest = new RegisterRequest(
                 "ayush",
-                MAIL,
+                "test@mail.com",
                 "test@123"
         );
         final String encodePassword = "encodedtest@123";
@@ -41,7 +41,7 @@ public class UserServiceTest {
         when(mockPasswordEncoder.encode(registerRequest.getPassword())).thenReturn(encodePassword);
 
         User newUser = new User(registerRequest.getEmail(), registerRequest.getName(), encodePassword, Role.USER);
-        User savedUser = new User(1L, MAIL, "ayush", encodePassword, Role.USER);
+        User savedUser = new User(1L, "test@mail.com", "ayush", encodePassword, Role.USER);
             when(mockUserRepository.save(newUser))
                     .thenReturn(savedUser);
 
