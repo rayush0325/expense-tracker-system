@@ -8,11 +8,12 @@ export default function RegisterPage() {
     const [email, setEmail] = useState("");
     const [fullName, setFullName] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     async function handleSubmit(e) {
         e.preventDefault();
-
+        setLoading(true);
         try {
             const response = await apiClient.post("/user/register", {
                 email : email,
@@ -23,7 +24,11 @@ export default function RegisterPage() {
             navigate("/login");
         } catch (error) {
             const message = error?.response?.data?.title || "something went wrong";
-            toast.error(message);
+            toast.error(message, {
+                toastId : message
+            });
+        }finally{
+            setLoading(false);
         }
 
     }
@@ -43,7 +48,9 @@ export default function RegisterPage() {
                     <label htmlFor="password" className="form-label">Password</label>
                     <input id="password" onChange={(e) => { setPassword( e.target.value) }} type="password"  className="form-control" />
                 </div>
-                <button type="submit" className="btn btn-primary">Submit</button>
+                <button type="submit" disabled={loading} className="btn btn-primary">
+                    {loading ? "Registering..." : "Register"}
+                </button>
             </form>
         </div>
     )
