@@ -22,8 +22,8 @@ export default function RegisterPage() {
             toast.success("Registered successfully! Please login.");
             navigate("/login");
         } catch (error) {
-
-            console.log(error)
+            const message = error?.response?.data?.title || "something went wrong";
+            toast.error(message);
         }
 
     }
