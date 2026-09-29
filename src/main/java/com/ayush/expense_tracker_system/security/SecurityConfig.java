@@ -19,7 +19,9 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter(){
         CorsConfiguration configuration = new CorsConfiguration(); //configuration map
-        configuration.setAllowedOrigins(List.of("http://localhost:5173/"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("POST","GET", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); //map configuration to request that matches given pattern
