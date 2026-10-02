@@ -1,4 +1,4 @@
-package com.ayush.expense_tracker_system.exception;
+package com.ayush.expense_tracker_system.exception.handler;
 
 import com.ayush.expense_tracker_system.dto.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -28,11 +28,11 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
          List<FieldError> errorList =  exception.getBindingResult().getFieldErrors();
          for (FieldError error : errorList){
-             errors.put(error.getField(), error.getDefaultMessage());
+             errors.putIfAbsent(error.getField(), error.getDefaultMessage());
          }
 
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(errors);
     }
 }
