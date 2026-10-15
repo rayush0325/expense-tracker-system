@@ -1,8 +1,11 @@
 package com.ayush.expense_tracker_system.controller;
 
+import com.ayush.expense_tracker_system.dto.request.LoginRequest;
 import com.ayush.expense_tracker_system.dto.request.RegisterRequest;
+import com.ayush.expense_tracker_system.dto.response.LoginResponse;
 import com.ayush.expense_tracker_system.dto.response.RegisterResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.EmailAlreadyExistsException;
+import com.ayush.expense_tracker_system.exception.handler.custom.InvalidEmailOrPasswordException;
 import com.ayush.expense_tracker_system.model.Role;
 import com.ayush.expense_tracker_system.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -45,7 +48,7 @@ public class UserControllerTests {
         RegisterRequest registerRequest = new RegisterRequest("tester", "test@gmail.com", "test@123");
 
         when(mockUserService.registerUser(any(RegisterRequest.class)))
-                .thenReturn(new RegisterResponse(1L, "tester", "test@gmail.com", Role.USER));
+                .thenReturn(new RegisterResponse(1L, "tester", "test@gmail.com", Role.ROLE_USER));
 
 
         mockMvc.perform(
@@ -57,7 +60,7 @@ public class UserControllerTests {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value(registerRequest.getName()))
                 .andExpect(jsonPath("$.email").value(registerRequest.getEmail()))
-                .andExpect(jsonPath("$.role").value(Role.USER.toString()));
+                .andExpect(jsonPath("$.role").value(Role.ROLE_USER.toString()));
 
 
 
@@ -86,8 +89,6 @@ public class UserControllerTests {
                         """))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-//                .andExpect(jsonPath("$.name").value("name must not be blank"));
-
         verify(mockUserService, never()).registerUser(any(RegisterRequest.class));
     }
 
@@ -109,6 +110,51 @@ public class UserControllerTests {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("title").value("email already exists"));
 
+    }
+
+    @Test
+    void shouldLoginUserWhenValidCredentials() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("test@mail.com", "test@123");
+        ArgumentCaptor<LoginRequest> captor = ArgumentCaptor.forClass(LoginRequest.class);
+        when(mockUserService.authenticateUser(any(LoginRequest.class)))
+                .thenReturn(new LoginResponse("it_is_a_jwt_token"));
+
+        mockMvc.perform(
+                post("/api/v1/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest))
+        )
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.jwtToken").value("it_is_a_jwt_token"));
+
+        verify(mockUserService).authenticateUser(captor.capture());
+        LoginRequest loginRequest1 = captor.getValue();
+        assertThat(loginRequest1.getEmail()).isEqualTo(loginRequest.getEmail());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenInvalidCredentials() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("unregistered@mail.com", "test@123");
+
+        when(mockUserService.authenticateUser(any(LoginRequest.class)))
+                .thenThrow(new InvalidEmailOrPasswordException("invalid email or password"));
+
+        mockMvc.perform(post("/api/v1/user/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("invalid email or password"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenInvalidFrmatData() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("", "test@123");
+
+        mockMvc.perform(post("/api/v1/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email").value("email must not be blank"));
     }
 
 }
