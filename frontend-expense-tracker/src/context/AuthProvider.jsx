@@ -27,7 +27,20 @@ export default function AuthProvider({children}){
     }
 
 
-   
+    useEffect(()=>{
+        console.log("app started")
+        const jwtToken = localStorage.getItem("jwtToken");
+        if(Boolean(jwtToken)){
+            console.log("jwt is present");
+            login(jwtToken);
+        }
+        else{
+            console.log("go to home page")
+            navigate("/");
+        }
+    },[]);
+
+
     return (
         <AuthContext.Provider value={{jwtToken, setJwtToken, loggedIn, setLoggedIn, logout, login}}>
             {children}
