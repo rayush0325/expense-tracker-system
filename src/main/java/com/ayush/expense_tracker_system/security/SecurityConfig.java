@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,17 +38,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtService jwtService){
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtService jwtService, UserDetailsService userDetailsService, CustomAuthenticationEntryPoint authenticationEntryPoint){
        return   httpSecurity
                     .cors(Customizer.withDefaults())
                     .csrf(AbstractHttpConfigurer::disable)
                     .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .authorizeHttpRequests(auth -> auth
+               .exceptionHandling(exception -> exception
+                       .authenticationEntryPoint(authenticationEntryPoint))
+               .authorizeHttpRequests(auth -> auth
                             .requestMatchers("/api/v1/user/register").permitAll()
                             .requestMatchers("/api/v1/user/login").permitAll()
                             .anyRequest().authenticated()
                     )
-                    .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(new JwtAuthFilter(jwtService, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                     .build();
 
     }
