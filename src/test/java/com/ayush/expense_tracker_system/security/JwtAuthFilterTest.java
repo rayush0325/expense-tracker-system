@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.IOException;
 
@@ -21,14 +22,16 @@ public class JwtAuthFilterTest {
     private final FilterChain filterChain;
     private final JwtAuthFilter jwtAuthFilter;
     private final Claims claims;
+    private final UserDetailsService userDetailsService;
 
     public JwtAuthFilterTest() {
         this.mockJwtService = mock(JwtService.class);
         this.httpServletRequest = mock(HttpServletRequest.class);
         this.httpServletResponse = mock(HttpServletResponse.class);
+        this.userDetailsService = mock(UserDetailsService.class);
         claims = mock(Claims.class);
         this.filterChain = mock(FilterChain.class);
-        this.jwtAuthFilter = new JwtAuthFilter(mockJwtService);
+        this.jwtAuthFilter = new JwtAuthFilter(mockJwtService, userDetailsService);
     }
 
     @Test
