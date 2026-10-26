@@ -3,6 +3,7 @@ package com.ayush.expense_tracker_system.service;
 import com.ayush.expense_tracker_system.dto.request.LoginRequest;
 import com.ayush.expense_tracker_system.dto.request.RegisterRequest;
 import com.ayush.expense_tracker_system.dto.response.LoginResponse;
+import com.ayush.expense_tracker_system.dto.response.ProfileResponse;
 import com.ayush.expense_tracker_system.dto.response.RegisterResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.EmailAlreadyExistsException;
 import com.ayush.expense_tracker_system.model.CustomUserDetails;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -65,4 +67,14 @@ public class UserService {
         return new LoginResponse(jwtToken);
     }
 
+    public ProfileResponse getProfile() {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userDetails.getUser();
+        return new ProfileResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole()
+        );
+    }
 }

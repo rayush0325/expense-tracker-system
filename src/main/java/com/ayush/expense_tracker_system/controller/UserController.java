@@ -39,10 +39,11 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<?> getProfile(){
+    public ResponseEntity<ProfileResponse> getProfile(){
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ProfileResponse("profile from protected endpoint"));
+                .body(userService.getProfile());
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
@@ -55,14 +56,14 @@ public class UserController {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentials(){
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(HttpStatus.valueOf(401))
                 .body(new ErrorResponse("invalid email or password"));
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleInvalidEmailOrPasswordException(Exception exception){
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(HttpStatus.valueOf(401))
                 .body(new ErrorResponse("authentication failed"));
     }
 
