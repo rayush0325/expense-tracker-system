@@ -170,8 +170,14 @@ public class UserControllerIntegrationTests {
                 .header("Authorization", "Bearer " + loginResponse.getJwtToken())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("profile from protected endpoint"))
-                .andDo(print());
+                .andExpect(jsonPath("$.name").value(registerRequest.getName()))
+                .andExpect(jsonPath("$.email").value(registerRequest.getEmail()))
+                .andExpect(jsonPath("$.role").value(Role.ROLE_USER.name()));
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.name").value(registerRequest.getName())
+//                .andExpect(jsonPath("$.email").value(registerRequest.getEmail());
+//                .andExpect(jsonPath("$.role").value(Role.ROLE_USER.name())
+//                .andDo(print());
     }
 
     @Test
@@ -180,6 +186,18 @@ public class UserControllerIntegrationTests {
         mockMvc.perform(get("/api/v1/user/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "invalid.jwt.token")
+                )
+                .andExpect(status().is(401))
+                .andExpect(jsonPath("$.title").value("authentication failed"))
+                .andDo(print());
+    }
+
+    @Test
+    void shouldNotGetProfileWhenEmptyToken() throws Exception {
+
+        mockMvc.perform(get("/api/v1/user/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+//                        .header("Authorization", "")
                 )
                 .andExpect(status().is(401))
                 .andExpect(jsonPath("$.title").value("authentication failed"))
