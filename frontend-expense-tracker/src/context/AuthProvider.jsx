@@ -40,6 +40,7 @@ export default function AuthProvider({children}){
         }
     },[]);
 
+    window.addEventListener("auth : unauthorized", logout);
 
     return (
         <AuthContext.Provider value={{jwtToken, setJwtToken, loggedIn, setLoggedIn, logout, login}}>
