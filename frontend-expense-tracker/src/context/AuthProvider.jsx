@@ -5,6 +5,7 @@ import { AuthContext } from "./AuthContext";
 export default function AuthProvider({children}){
 
     const [jwtToken, setJwtToken] = useState(null);
+    const [loggedIn, setLoggedIn] = useState(false);
     const navigate = useNavigate();
     
     function logout(){
