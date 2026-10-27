@@ -21,7 +21,6 @@ export default function AuthProvider({children}){
 
         setJwtToken(jwtToken);
         localStorage.setItem("jwtToken", jwtToken);
-        navigate("/profile")
     }
 
 
