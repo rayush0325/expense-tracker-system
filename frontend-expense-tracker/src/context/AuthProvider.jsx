@@ -5,14 +5,13 @@ import { AuthContext } from "./AuthContext";
 export default function AuthProvider({children}){
 
     const [jwtToken, setJwtToken] = useState(null);
-    const [loggedIn, setLoggedIn] = useState(false);
+    const loggedIn = Boolean(jwtToken);
     const navigate = useNavigate();
     
     function logout(){
         console.log("logging out")
 
         setJwtToken(null);
-        setLoggedIn(false);
         localStorage.removeItem("jwtToken");
         navigate("/");
     }
@@ -22,7 +21,6 @@ export default function AuthProvider({children}){
 
         setJwtToken(jwtToken);
         localStorage.setItem("jwtToken", jwtToken);
-        setLoggedIn(true);
         navigate("/profile")
     }
 
@@ -43,7 +41,7 @@ export default function AuthProvider({children}){
     window.addEventListener("auth : unauthorized", logout);
 
     return (
-        <AuthContext.Provider value={{jwtToken, setJwtToken, loggedIn, setLoggedIn, logout, login}}>
+        <AuthContext.Provider value={{jwtToken, setJwtToken, loggedIn, logout, login}}>
             {children}
         </AuthContext.Provider>
     )
