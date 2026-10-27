@@ -25,7 +25,7 @@ apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         console.log(`response interceptor - url type = ${error.config.url !== "/user/login"}`)
-        if(error.config.url !== "/user/login"){
+        if(error.config.url !== "/user/login" && error.response.status === 401){
             console.log("callin a protected endpoint with invalid token");
             window.dispatchEvent(new Event("auth : unauthorized"));
             const message = "logged out";
