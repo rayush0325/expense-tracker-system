@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 import apiClient from "../services/apiClient";
+import handleApiError from "../utils/handleApiError"
 
 export default function LoginPage() {
     const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ export default function LoginPage() {
         const validationErrors = validate();
         setErrors(validationErrors);
 
-        if (Object.keys(validationErrors) > 0) {
+        if (Object.keys(validationErrors).length > 0) {
             return;
         }
         try {
@@ -39,6 +40,9 @@ export default function LoginPage() {
                 toast.error(message, {
                     toastId : message
                 });
+            }
+            else{
+                handleApiError(error);
             }
         }
 
