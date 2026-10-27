@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { AuthContext } from "./AuthContext";
 
 export default function AuthProvider({children}){
@@ -13,6 +14,10 @@ export default function AuthProvider({children}){
 
         setJwtToken(null);
         localStorage.removeItem("jwtToken");
+        const message = "logged out";
+            toast.error(message, {
+                toastId : message
+            });
         navigate("/");
     }
 

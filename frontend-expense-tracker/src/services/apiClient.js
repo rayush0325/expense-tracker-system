@@ -1,5 +1,4 @@
 import axios from "axios";
-import { toast } from "react-toastify";
 
 const apiClient = axios.create({
     baseURL : 'http://localhost:8080/api/v1',
@@ -28,10 +27,6 @@ apiClient.interceptors.response.use(
         if(error.config.url !== "/user/login" && error.response.status === 401){
             console.log("callin a protected endpoint with invalid token");
             window.dispatchEvent(new Event("auth : unauthorized"));
-            const message = "logged out";
-            toast.error(message, {
-                toastId : message
-            });
         }
         return Promise.reject(error);
     }

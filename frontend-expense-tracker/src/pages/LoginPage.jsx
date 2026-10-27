@@ -33,6 +33,7 @@ export default function LoginPage() {
                     toast.success(message, {
                         toastId : message
                     });
+            navigate("/profile")
             
         } catch (error) {
             console.error("error in logging in into backend");
