@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 import apiClient from "../services/apiClient";
-import handleApiError from "../utils/handleApiError"
+import { handleApiError } from "../utils/handleApiError";
 
 export default function LoginPage() {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
+    const [loading, setLoading] = useState(false);
 
     const {login} = useContext(AuthContext);
 
@@ -25,6 +26,7 @@ export default function LoginPage() {
             return;
         }
         try {
+            setLoading(true);
             const loginResponse = await apiClient.post("/user/login", formData);
             login(loginResponse.data.jwtToken);
             const message = "logged in"
@@ -44,6 +46,9 @@ export default function LoginPage() {
             else{
                 handleApiError(error);
             }
+        }
+        finally{
+            setLoading(false);
         }
 
 
@@ -96,7 +101,7 @@ export default function LoginPage() {
                     <input id="password" onChange={handleChange} className="form-control" type="password" />
                     {errors.password && <div className="text-danger">{errors.password}</div>}
                 </div>
-                <button type="submit" className="btn btn-primary">login</button>
+                <button type="submit" disabled={(loading) ? true : false} className="btn btn-primary">login</button>
             </form>
         </div>  
     )
