@@ -1,13 +1,19 @@
 package com.ayush.expense_tracker_system.security;
 
+import com.ayush.expense_tracker_system.service.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -16,11 +22,12 @@ import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+
     @Bean
     public CorsFilter corsFilter(){
         CorsConfiguration configuration = new CorsConfiguration(); //configuration map
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("POST","GET", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowedMethods(List.of("POST","GET", "PUT", "DELETE", "PATCH","OPTION"));
         configuration.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -31,16 +38,35 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtService jwtService, UserDetailsService userDetailsService, CustomAuthenticationEntryPoint authenticationEntryPoint){
        return   httpSecurity
                     .cors(Customizer.withDefaults())
-               .csrf(AbstractHttpConfigurer::disable)
-                    .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                    .csrf(AbstractHttpConfigurer::disable)
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+               .exceptionHandling(exception -> exception
+                       .authenticationEntryPoint(authenticationEntryPoint))
+               .authorizeHttpRequests(auth -> auth
+                            .requestMatchers("/api/v1/user/register").permitAll()
+                            .requestMatchers("/api/v1/user/login").permitAll()
+                       .requestMatchers(
+                               "/swagger-ui/**",
+                               "/swagger-ui.html",
+                               "/v3/api-docs/**"
+                       ).permitAll()
+                            .anyRequest().authenticated()
+                    )
+                    .addFilterBefore(new JwtAuthFilter(jwtService, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                     .build();
 
     }
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration){
+        return authenticationConfiguration.getAuthenticationManager();
     }
 }

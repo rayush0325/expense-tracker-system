@@ -1,154 +1,141 @@
-# Expense Tracker System (Spring Boot + React + Vite)
+# Expense Tracker System
 
-A full-stack expense tracking application built with **Spring Boot** and **React**.
-The project focuses on REST API development, database persistence, validation, exception handling, testing, and frontend-backend integration.
-
-# 🛠️ Prerequisites
-Before you begin, ensure you have met the following requirements:
-
-- Java JDK (17 or higher)
-- Node.js (18 or higher) & npm
-- Maven (or use the included ./mvnw wrapper)
-
-# 🚀 Getting Started
-1. Backend (Spring Boot)
-  - The backend runs on http://localhost:8080 by default.
-  - To run the backend:
-    - ./mvnw spring-boot:run
-
-2. Frontend (React + Vite)
-  - The frontend runs on http://localhost:5173 by default (Vite default port).
-  - To run the frontend:
-    - cd frontend
-    - npm install
-    - npm run dev
-
+A full-stack web application built with **Spring Boot** and **React**. The project focuses on REST API development, JWT-based authentication, database persistence, input validation, exception handling, and automated testing.
 
 ## Tech Stack
 
 **Backend**
-
-* Java
-* Spring Boot
-* Spring Data JPA / Hibernate
-* Spring Security
-* MySQL
-* Maven
-* JUnit, Mockito, AssertJ
+- Java, Spring Boot, Spring Security
+- Spring Data JPA, Hibernate, MySQL
+- JWT (JJWT), BCrypt
+- Maven
+- JUnit, Mockito, AssertJ, MockMvc
+- Swagger / OpenAPI
 
 **Frontend**
-
-* React
-* Vite
-* Axios
-* Bootstrap
-* React Router
-* React Toastify
+- React, Vite
+- Axios
+- React Router
+- Bootstrap
+- React Toastify
 
 ## Features
 
-* User registration
-* Request validation
-* BCrypt password encryption
-* Duplicate email handling
-* Global and local exception handling
-* REST API integration with React
-* Client-side form validation
-* Unit and integration testing
-* MySQL database persistence
+- User registration with input validation
+- User login using email and password
+- JWT-based authentication for protected endpoints
+- BCrypt password hashing
+- Persistent authentication across browser refreshes using local storage
+- Automatic JWT attachment to API requests using an Axios interceptor
+- Centralized handling of unauthorized responses
+- User profile retrieval and authenticated navbar
+- Global and controller-level exception handling
+- Database persistence using MySQL
+- Unit, controller, and integration tests
+- Interactive API documentation using Swagger UI
 
 ## Project Structure
 
 ```text
 expense-tracker-system/
 ├── backend/
-│   ├── src/main/java/
-│   │   ├── controller/
-│   │   ├── service/
-│   │   ├── repository/
-│   │   ├── model/
-│   │   ├── dto/
-│   │   ├── exception/
-│   │   └── config/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   └── resources/
+│   │   └── test/
 │   └── pom.xml
 │
 └── frontend/
     ├── src/
     │   ├── components/
+    │   ├── context/
     │   ├── pages/
     │   └── services/
     └── package.json
 ```
 
-## API
+## API Endpoints
 
-### User Registration
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| POST | `/api/v1/user/register` | Register a new user | Public |
+| POST | `/api/v1/user/login` | Authenticate user and obtain JWT | Public |
+| GET | `/api/v1/user/me` | Retrieve authenticated user details | Protected |
+
+Protected endpoints require a valid JWT in the `Authorization` header:
 
 ```http
-POST /api/v1/user/register
+Authorization: Bearer <your-jwt-token>
 ```
-
-Request:
-
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-Successful response:
-
-```json
-{
-  "id": 1,
-  "name": "John Doe",
-  "email": "john@example.com",
-  "role": "USER"
-}
-```
-
-### Response Statuses
-
-| Status            | Description                  |
-| ----------------- | ---------------------------- |
-| `201 Created`     | User registered successfully |
-| `400 Bad Request` | Invalid request data         |
-| `409 Conflict`    | Email already exists         |
-
-## Testing
-
-The project includes:
-
-* Service unit tests using Mockito and AssertJ
-* Controller tests using MockMvc
-* Integration tests using Spring Boot and H2
-* Database persistence verification
-* Duplicate email test cases
-
-
-Configure the required MySQL database and environment variables before starting the backend.
-
-## Future Improvements
-
-* User login
-* JWT authentication
-* Role-based authorization
-* Expense CRUD
-* Category management
-* Expense filtering and summaries
 
 ## API Documentation
 
-The REST APIs are documented using **Swagger / OpenAPI**.
+Swagger UI provides interactive documentation for viewing and testing the REST APIs.
 
-After starting the backend, Swagger UI can be accessed at:
+Start the backend and visit:
 
-```text
-http://localhost:8080/swagger-ui/index.html
+`http://localhost:8080/swagger-ui/index.html`
+
+## Authentication Flow
+
+1. The user submits login credentials.
+2. Spring Security authenticates the credentials.
+3. The backend generates and returns a signed JWT.
+4. The frontend stores the token in local storage.
+5. Axios attaches the token to subsequent API requests.
+6. The backend validates the token and authenticates requests to protected endpoints.
+7. If an unauthorized response indicates an invalid or expired session, the frontend clears the authentication state and logs the user out.
+
+## Testing
+
+- **Unit tests:** JUnit, Mockito, and AssertJ
+- **Controller tests:** MockMvc
+- **Integration tests:** Spring Boot and H2
+- Registration success and duplicate-email scenarios
+- Request validation and exception handling
+- Authentication and JWT-related test cases
+
+## Getting Started
+
+### Prerequisites
+
+- Java
+- Maven
+- Node.js and npm
+- MySQL
+
+### 1. Configure the Backend
+
+Configure the MySQL connection and required environment variables. Keep database credentials and JWT secrets outside the source code.
+
+### 2. Run the Backend
+
+```bash
+cd backend
+mvn spring-boot:run
 ```
 
-Swagger UI allows the available APIs to be viewed and tested directly from the browser.
+### 3. Run the Frontend
 
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
+### 4. Explore the API
+
+Open Swagger UI at `http://localhost:8080/swagger-ui/index.html`.
+
+## Future Improvements
+
+- Expense CRUD operations
+- Category management
+- Expense filtering and summaries
+- Pagination and additional reporting
+- Deployment and production configuration
+
+## Project Status
+
+**In Development** — authentication, registration, frontend-backend integration, validation, and testing are being developed incrementally.
