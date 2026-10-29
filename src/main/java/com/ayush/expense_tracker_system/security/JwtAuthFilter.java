@@ -37,7 +37,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if(authorization != null && authorization.startsWith("Bearer")){
             logger.info("fetching jwt token");
             String jwtToken = authorization.substring(7);
-            logger.info(String.format("jwt Token = %s", jwtToken));
             try {
                 logger.info("extracting claims from jwt token");
                 Claims claims = jwtService.extractClaims(jwtToken);

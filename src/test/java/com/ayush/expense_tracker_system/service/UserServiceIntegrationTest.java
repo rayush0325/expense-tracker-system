@@ -8,6 +8,7 @@ import com.ayush.expense_tracker_system.exception.handler.custom.EmailAlreadyExi
 import com.ayush.expense_tracker_system.model.Role;
 import com.ayush.expense_tracker_system.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.AuthenticationException;
@@ -30,6 +31,10 @@ public class UserServiceIntegrationTest {
         this.userRepository = userRepository;
     }
 
+    @BeforeEach
+    void emptyUserRepository(){
+        userRepository.deleteAll();
+    }
 
     @Test
     @Transactional
