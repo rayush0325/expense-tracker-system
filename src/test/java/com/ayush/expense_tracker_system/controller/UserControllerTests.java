@@ -5,23 +5,22 @@ import com.ayush.expense_tracker_system.dto.request.RegisterRequest;
 import com.ayush.expense_tracker_system.dto.response.LoginResponse;
 import com.ayush.expense_tracker_system.dto.response.RegisterResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.EmailAlreadyExistsException;
-import com.ayush.expense_tracker_system.exception.handler.custom.InvalidEmailOrPasswordException;
 import com.ayush.expense_tracker_system.model.Role;
 import com.ayush.expense_tracker_system.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -137,12 +136,12 @@ public class UserControllerTests {
         LoginRequest loginRequest = new LoginRequest("unregistered@mail.com", "test@123");
 
         when(mockUserService.authenticateUser(any(LoginRequest.class)))
-                .thenThrow(new InvalidEmailOrPasswordException("invalid email or password"));
+                .thenThrow(new BadCredentialsException("invalid email or password"));
 
         mockMvc.perform(post("/api/v1/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.title").value("invalid email or password"));
     }
 

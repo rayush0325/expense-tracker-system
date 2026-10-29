@@ -4,20 +4,21 @@ A full-stack web application built with **Spring Boot** and **React**. The proje
 
 ## Tech Stack
 
-**Backend**
-- Java, Spring Boot, Spring Security
-- Spring Data JPA, Hibernate, MySQL
-- JWT (JJWT), BCrypt
-- Maven
-- JUnit, Mockito, AssertJ, MockMvc
-- Swagger / OpenAPI
+- **Backend:** Java 21, Spring Boot, Spring Security, Spring Data JPA
 
-**Frontend**
-- React, Vite
-- Axios
-- React Router
-- Bootstrap
-- React Toastify
+- **Frontend:** React, Vite, Axios, Bootstrap
+
+- **Database:** MySQL
+
+- **Authentication:** JWT, BCrypt
+
+- **API Documentation:** Swagger UI
+  
+- **Testing:** JUnit, Mockito, AssertJ, MockMvc
+
+- **Build Tool:** Maven
+
+- **Deployment:** Docker, Render, Aiven
 
 ## Features
 
@@ -33,6 +34,7 @@ A full-stack web application built with **Spring Boot** and **React**. The proje
 - Database persistence using MySQL
 - Unit, controller, and integration tests
 - Interactive API documentation using Swagger UI
+- Dockerized backend for deployment
 
 ## Project Structure
 
@@ -44,6 +46,8 @@ expense-tracker-system/
 │   │   │   ├── java/
 │   │   │   └── resources/
 │   │   └── test/
+│   ├── Dockerfile
+│   ├── compose.yaml
 │   └── pom.xml
 │
 └── frontend/
@@ -127,6 +131,22 @@ npm run dev
 ### 4. Explore the API
 
 Open Swagger UI at `http://localhost:8080/swagger-ui/index.html`.
+
+## Docker
+
+The backend includes a Dockerfile to build and run the Spring Boot application in a container.
+
+From the backend directory, build the application image:
+
+```bash
+mvn clean package
+docker compose up --build
+```
+## Deployment
+
+- **Backend:** Spring Boot application deployed on Render using Docker.
+- **Database:** MySQL hosted on Aiven.
+- **Frontend:** React application deployed separately as a static site.
 
 ## Future Improvements
 

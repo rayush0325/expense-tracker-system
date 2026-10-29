@@ -5,9 +5,11 @@ import com.ayush.expense_tracker_system.dto.request.RegisterRequest;
 import com.ayush.expense_tracker_system.dto.response.LoginResponse;
 import com.ayush.expense_tracker_system.model.Role;
 import com.ayush.expense_tracker_system.model.User;
+import com.ayush.expense_tracker_system.service.JwtService;
 import com.ayush.expense_tracker_system.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
 
@@ -18,9 +20,9 @@ public class JwtAuthFilterIntegrationTests {
     private final UserService userService;
     private final JwtAuthFilter jwtAuthFilter;
 
-    public JwtAuthFilterIntegrationTests(UserService userService, JwtAuthFilter jwtAuthFilter) {
+    public JwtAuthFilterIntegrationTests(UserService userService, JwtService jwtService, UserDetailsService userDetailsService) {
         this.userService = userService;
-        this.jwtAuthFilter = jwtAuthFilter;
+        this.jwtAuthFilter = new JwtAuthFilter(jwtService, userDetailsService);
     }
 
     @Test
