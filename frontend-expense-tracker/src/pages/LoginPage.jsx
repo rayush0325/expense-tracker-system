@@ -102,7 +102,9 @@ export default function LoginPage() {
                     <input id="password" onChange={handleChange} className="form-control" type="password" />
                     {errors.password && <div className="text-danger">{errors.password}</div>}
                 </div>
-                <button type="submit" disabled={(loading) ? true : false} className="btn btn-primary">login</button>
+                <button type="submit" disabled={(loading) ? true : false} className="btn btn-primary">
+                 {loading ? "logging in" : "login"}
+                </button>
             </form>
         </div>  
     )
