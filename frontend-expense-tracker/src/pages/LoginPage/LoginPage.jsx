@@ -1,9 +1,10 @@
+import "./LoginPage.css"
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AuthContext } from "../context/AuthContext";
-import apiClient from "../services/apiClient";
-import { handleApiError } from "../utils/handleApiError";
+import { AuthContext } from "../../context/AuthContext";
+import apiClient from "../../services/apiClient";
+import { handleApiError } from "../../utils/handleApiError";
 
 export default function LoginPage() {
     const [formData, setFormData] = useState({
@@ -90,7 +91,7 @@ export default function LoginPage() {
     }
     return (
         <div className="vw-100 vh-100 d-flex justify-content-center align-items-center bg-dark text-white">
-            <form action="" onSubmit={handleSubmit} className="w-50 p-3 border border-secondary rounded bg-secondary text-white">
+            <form action="" onSubmit={handleSubmit} className="login-form  p-3 border border-secondary rounded bg-secondary text-white">
                 <h2 className="text-center">login form</h2>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email Address</label>
@@ -102,7 +103,9 @@ export default function LoginPage() {
                     <input id="password" onChange={handleChange} className="form-control" type="password" />
                     {errors.password && <div className="text-danger">{errors.password}</div>}
                 </div>
-                <button type="submit" disabled={(loading) ? true : false} className="btn btn-primary">login</button>
+                <button type="submit" disabled={(loading) ? true : false} className="btn btn-primary">
+                 {loading ? "logging in" : "login"}
+                </button>
             </form>
         </div>  
     )

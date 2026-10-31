@@ -25,9 +25,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.info("at authentication entry point");
-
-        System.out.printf("\n\n\n\nat authentication entry point\n\n\n\n");
-
         response.setStatus(401);
         response.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse("authentication failed")));
     }
