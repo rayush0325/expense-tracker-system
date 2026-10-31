@@ -25,19 +25,25 @@ export function Navbar() {
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div className="collapse navbar-collapse " id="navbarContent">
-                    <div className="navbar-nav ms-auto  ">
+                <div className="collapse navbar-collapse   " id="navbarContent">
+                    <div className="navbar-nav ms-auto align-items-start">
                         <NavLink className="nav-link" to="/">Home</NavLink>
-                        {!loggedIn && <NavLink className="nav-link" to="/register">Register</NavLink>}
-                        {!loggedIn && <NavLink className="nav-link" to="/login">Login</NavLink>}
-                        {loggedIn && <NavLink className="nav-link" to="/profile">Profile</NavLink>}
+                        {!loggedIn && (
+                            <>
+                                <NavLink className="nav-link" to="/register">Register</NavLink>
+                                <NavLink className="nav-link" to="/login">Login</NavLink>
+
+                            </>
+                        )
+                        }
+                        {loggedIn && (
+                            <>
+                                <NavLink className="nav-link " to="/profile">Profile({user.name})</NavLink>
+                                <button type="button " onClick={handleLogout} className="btn btn-danger ">Logout</button>
+                            </>
+                        )}
                     </div>
-                    {loggedIn && (
-                        <div className="d-flex align-items-center ms-auto gap-3">
-                            <span className="navbar-brand" >{user.name}</span>
-                            <button type="button" onClick={handleLogout} className="btn btn-outline-danger">Logout</button>
-                        </div>
-                    )}
+
                 </div>
             </div>
         </nav>
