@@ -1,8 +1,10 @@
+import './RegisterPage.css';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import apiClient from "../services/apiClient";
-import { handleApiError } from "../utils/handleApiError";
+import apiClient from "../../services/apiClient";
+import { handleApiError } from "../../utils/handleApiError";
+
 
 export default function RegisterPage() {
 
@@ -84,7 +86,7 @@ export default function RegisterPage() {
     }
     return (
         <div className="d-flex justify-content-center align-items-center vh-100 bg-dark text-white">
-            <form onSubmit={handleSubmit} className="w-50 p-3 border border-secondary rounded bg-secondary text-white">
+            <form onSubmit={handleSubmit} className="register-form  p-3 border border-secondary rounded bg-secondary text-white">
                 <h2 className="text-center">registration form</h2>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email address</label>
