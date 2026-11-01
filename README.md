@@ -18,7 +18,7 @@ A full-stack web application built with **Spring Boot** and **React**. The proje
 
 - **Build Tool:** Maven
 
-- **Deployment:** Docker, Render, Aiven
+- **Deployment:** Docker, Render, Aiven, Vercel
 
 ## Features
 
@@ -35,6 +35,7 @@ A full-stack web application built with **Spring Boot** and **React**. The proje
 - Unit, controller, and integration tests
 - Interactive API documentation using Swagger UI
 - Dockerized backend for deployment
+- frontend is mobile responsive
 
 ## Project Structure
 
@@ -79,7 +80,7 @@ Swagger UI provides interactive documentation for viewing and testing the REST A
 
 Start the backend and visit:
 
-`http://localhost:8080/swagger-ui/index.html`
+`https://expense-tracker-system-test.onrender.com/swagger-ui/index.html#/`
 
 ## Authentication Flow
 
@@ -128,10 +129,6 @@ npm install
 npm run dev
 ```
 
-### 4. Explore the API
-
-Open Swagger UI at `http://localhost:8080/swagger-ui/index.html`.
-
 ## Docker
 
 The backend includes a Dockerfile to build and run the Spring Boot application in a container.
@@ -144,9 +141,15 @@ docker compose up --build
 ```
 ## Deployment
 
-- **Backend:** Spring Boot application deployed on Render using Docker.
-- **Database:** MySQL hosted on Aiven.
-- **Frontend:** React application deployed separately as a static site.
+## Frontend Deployment (Vercel)
+
+The frontend is deployed on Vercel.
+
+**Live URL:** https://expense-tracker-system-henna.vercel.app/
+
+The backend is deployed on Render using docker.
+
+**Backend URL:** https://expense-tracker-system-test.onrender.com
 
 ## Future Improvements
 
@@ -159,3 +162,7 @@ docker compose up --build
 ## Project Status
 
 **In Development** — authentication, registration, frontend-backend integration, validation, and testing are being developed incrementally.
+
+## 🌐 Live Demo
+
+**[Expense Tracker – Open Application](https://expense-tracker-system-henna.vercel.app/)**

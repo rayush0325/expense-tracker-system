@@ -1,6 +1,7 @@
 package com.ayush.expense_tracker_system.security;
 
 import com.ayush.expense_tracker_system.service.JwtService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,10 +24,13 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
+
     @Bean
     public CorsFilter corsFilter(){
         CorsConfiguration configuration = new CorsConfiguration(); //configuration map
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of(frontendUrl));
         configuration.setAllowedMethods(List.of("POST","GET", "PUT", "DELETE", "PATCH","OPTION"));
         configuration.setAllowedHeaders(List.of("*"));
 
