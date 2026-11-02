@@ -4,7 +4,9 @@ import com.ayush.expense_tracker_system.dto.request.LoginRequest;
 import com.ayush.expense_tracker_system.dto.request.RegisterRequest;
 import com.ayush.expense_tracker_system.dto.response.LoginResponse;
 import com.ayush.expense_tracker_system.dto.response.RegisterResponse;
+import com.ayush.expense_tracker_system.dto.response.UserResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.EmailAlreadyExistsException;
+import com.ayush.expense_tracker_system.exception.handler.custom.UserNotFoundException;
 import com.ayush.expense_tracker_system.model.CustomUserDetails;
 import com.ayush.expense_tracker_system.model.Role;
 import com.ayush.expense_tracker_system.model.User;
@@ -145,6 +147,48 @@ public class UserServiceTest {
         verify(mockJwtService, never()).generateJwtToken(user);
     }
 
+    @Test
+    void shouldGetAllUsers(){
+        User user1 = new User(1L, "tester", "test@mail.com", "test@123", Role.ROLE_USER);
+
+        Iterable<User> userList = List.of(user1);
+        when(mockUserRepository.findAll()).thenReturn(userList);
+
+        List<UserResponse> responses = userService.getAllUsers();
+
+        verify(mockUserRepository).findAll();
+        responses.forEach(
+                userResponse -> {
+                    assertThat(userResponse.getId()).isEqualTo(user1.getId());
+                    assertThat(userResponse.getEmail()).isEqualTo(user1.getEmail());
+                    assertThat(userResponse.getName()).isEqualTo(user1.getName());
+                    assertThat(userResponse.getRole()).isEqualTo(user1.getRole());
+                }
+        );
+    }
+
+    @Test
+    void shouldDeleteExistingUserById(){
+        Long id = 1L;
+
+        when(mockUserRepository.existsById(id)).thenReturn(true);
+
+        userService.deleteUserById(id);
+
+        verify(mockUserRepository).existsById(id);
+
+        verify(mockUserRepository).deleteById(id);
+
+    }
+
+    @Test
+    void shouldThrowExceptionOnDeletingNonExistingUser(){
+        Long id = 1L;
+
+        when(mockUserRepository.existsById(id)).thenReturn(false);
+
+        assertThrows(UserNotFoundException.class, () -> userService.deleteUserById(id));
+    }
 
 
 
