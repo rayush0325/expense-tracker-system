@@ -56,7 +56,7 @@ public class UserServiceIntegrationTest {
         assertThat(response.getId()).isNotNull();
         assertThat(response.getName()).isEqualTo(registerRequest.getName());
         assertThat(response.getEmail()).isEqualTo(registerRequest.getEmail());
-        assertThat(response.getRole()).isEqualTo(Role.ROLE_USER);
+        assertThat(response.getRole()).isEqualTo(Role.USER);
 
 
 
@@ -114,8 +114,8 @@ public class UserServiceIntegrationTest {
     @Transactional
     void shouldGetAllUsers(){
 
-        User user1 = new User("tester1@mail.com", "tester1", "tester1@123", Role.ROLE_USER);
-        User user2 = new User("tester2@mail.com", "tester2", "tester2@123",Role.ROLE_ADMIN);
+        User user1 = new User("tester1@mail.com", "tester1", "tester1@123", Role.USER);
+        User user2 = new User("tester2@mail.com", "tester2", "tester2@123",Role.ADMIN);
         List<User> userList = List.of(user1, user2);
         userList.forEach(user -> userRepository.save(user));
 
@@ -145,7 +145,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     void shouldDeleteUserIfItExists(){
-        User user = new User("tester", "test@mail.com", "test@123", Role.ROLE_USER);
+        User user = new User("tester", "test@mail.com", "test@123", Role.USER);
         Long id = userRepository.save(user).getId();
 
         userService.deleteUserById(id);

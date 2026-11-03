@@ -49,7 +49,7 @@ public class UserService {
                 registerRequest.getEmail(),
                 registerRequest.getName(),
                 passwordEncoder.encode(registerRequest.getPassword()),
-                Role.ROLE_USER
+                Role.USER
         );
 
         User savedUser = userRepository.save(newUser);

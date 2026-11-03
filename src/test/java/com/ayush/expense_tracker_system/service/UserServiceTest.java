@@ -57,8 +57,8 @@ public class UserServiceTest {
 
         when(mockPasswordEncoder.encode(registerRequest.getPassword())).thenReturn(encodePassword);
 
-        User newUser = new User(registerRequest.getEmail(), registerRequest.getName(), encodePassword, Role.ROLE_USER);
-        User savedUser = new User(1L, "test@mail.com", "ayush", encodePassword, Role.ROLE_USER);
+        User newUser = new User(registerRequest.getEmail(), registerRequest.getName(), encodePassword, Role.USER);
+        User savedUser = new User(1L, "test@mail.com", "ayush", encodePassword, Role.USER);
             when(mockUserRepository.save(newUser))
                     .thenReturn(savedUser);
 
@@ -70,7 +70,7 @@ public class UserServiceTest {
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getEmail()).isEqualTo(registerRequest.getEmail());
         assertThat(response.getName()).isEqualTo(registerRequest.getName());
-        assertThat(response.getRole()).isEqualTo(Role.ROLE_USER);
+        assertThat(response.getRole()).isEqualTo(Role.USER);
 
     }
 
@@ -95,7 +95,7 @@ public class UserServiceTest {
     @Test
     void shouldLoginUserWhenValidCredentials(){
 
-        User user = new User("test@mail.com", "tester", "test@123", Role.ROLE_USER);
+        User user = new User("test@mail.com", "tester", "test@123", Role.USER);
         LoginRequest loginRequest = new LoginRequest(
                 user.getEmail(),
                 user.getPassword()
@@ -127,7 +127,7 @@ public class UserServiceTest {
 
     @Test
     void shouldNotLoginWhenInvalidCredentials(){
-        User user = new User("test@mail.com", "tester", "test@123", Role.ROLE_USER);
+        User user = new User("test@mail.com", "tester", "test@123", Role.USER);
         LoginRequest loginRequest = new LoginRequest(
                 user.getEmail(),
                 user.getPassword()
@@ -149,7 +149,7 @@ public class UserServiceTest {
 
     @Test
     void shouldGetAllUsers(){
-        User user1 = new User(1L, "tester", "test@mail.com", "test@123", Role.ROLE_USER);
+        User user1 = new User(1L, "tester", "test@mail.com", "test@123", Role.USER);
 
         Iterable<User> userList = List.of(user1);
         when(mockUserRepository.findAll()).thenReturn(userList);
