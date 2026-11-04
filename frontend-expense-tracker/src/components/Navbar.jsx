@@ -32,12 +32,7 @@ export function Navbar() {
                         {!loggedIn && (
                             <>
                                 <NavLink className="nav-link" to="/register">Register</NavLink>
-                                <NavLink className="nav-link" to="/login">Login</NavLink>
-                                
-                                
-
-
-                            </>
+                                <NavLink className="nav-link" to="/login">Login</NavLink>                            </>
                         )
                         }
                         {loggedIn && (
