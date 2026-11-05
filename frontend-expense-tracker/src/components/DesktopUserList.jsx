@@ -1,4 +1,4 @@
-export default function DesktopUserList({ userList }) {
+export default function DesktopUserList({ userList, handleDelete }) {
     return (
         <div className="table-responsive border border-secondary rounded">
             <table className="table table-hover table-dark align-middle mb-0 " >
@@ -19,11 +19,21 @@ export default function DesktopUserList({ userList }) {
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
                                 <td>{user.role}</td>
-                                <td><button type="button" className="btn btn-danger">DELETE</button></td>
+                                <td>
+                                    {user.role === 'USER' && (
+                                        <button
+                                            type="button"
+                                            className="btn btn-danger"
+                                            onClick={() => { handleDelete(user.id) }}>
+                                            DELETE
+                                        </button>
+                                    )}
+
+                                </td>
                             </tr>
                         )
                     })}
-                </tbody>    
+                </tbody>
             </table>
         </div>
     )
