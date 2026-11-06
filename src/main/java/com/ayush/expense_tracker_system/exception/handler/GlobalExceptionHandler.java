@@ -1,6 +1,7 @@
 package com.ayush.expense_tracker_system.exception.handler;
 
 import com.ayush.expense_tracker_system.dto.response.ErrorResponse;
+import com.ayush.expense_tracker_system.exception.handler.custom.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -17,7 +18,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception exception){
-        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage() + "global exception");
+        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errorResponse);
@@ -34,5 +35,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errors);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException exception){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(exception.getMessage()));
     }
 }

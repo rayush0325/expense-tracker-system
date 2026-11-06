@@ -24,7 +24,7 @@ public class JwtServiceTest {
 
     @Test
     void shouldGenerateJwtTokenAndExtractClaims(){
-        User user = new User("test@mail.com", "tester", "test@123", Role.ROLE_USER);
+        User user = new User("test@mail.com", "tester", "test@123", Role.USER);
         String jwtToken = jwtService.generateJwtToken(user);
 
         Claims claims = jwtService.extractClaims(jwtToken);
@@ -39,7 +39,7 @@ public class JwtServiceTest {
 
     @Test
     void shouldNotExtractClaimsFromMalformedToken(){
-        User user = new User("test@mail.com", "tester", "test@123", Role.ROLE_USER);
+        User user = new User("test@mail.com", "tester", "test@123", Role.USER);
         String jwtToken = jwtService.generateJwtToken(user);
         String malformedToken = jwtToken+"malformed";
 

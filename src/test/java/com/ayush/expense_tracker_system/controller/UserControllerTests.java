@@ -47,7 +47,7 @@ public class UserControllerTests {
         RegisterRequest registerRequest = new RegisterRequest("tester", "test@gmail.com", "test@123");
 
         when(mockUserService.registerUser(any(RegisterRequest.class)))
-                .thenReturn(new RegisterResponse(1L, "tester", "test@gmail.com", Role.ROLE_USER));
+                .thenReturn(new RegisterResponse(1L, "tester", "test@gmail.com", Role.USER));
 
 
         mockMvc.perform(
@@ -59,7 +59,7 @@ public class UserControllerTests {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value(registerRequest.getName()))
                 .andExpect(jsonPath("$.email").value(registerRequest.getEmail()))
-                .andExpect(jsonPath("$.role").value(Role.ROLE_USER.toString()));
+                .andExpect(jsonPath("$.role").value(Role.USER.toString()));
 
 
 

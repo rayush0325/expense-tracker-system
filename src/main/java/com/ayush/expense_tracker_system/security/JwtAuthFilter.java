@@ -46,10 +46,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        List.of(new SimpleGrantedAuthority(role)));
+                        List.of(new SimpleGrantedAuthority("ROLE_"+role)));
 
                 logger.info("setting authentication object in security context holder");
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                logger.info("authentication object has role = "+SecurityContextHolder.getContext().getAuthentication().getAuthorities());
             }catch (JwtException | IllegalArgumentException exception) {
                 logger.warn("jwt or illegal argument exception");
                 SecurityContextHolder.clearContext();
