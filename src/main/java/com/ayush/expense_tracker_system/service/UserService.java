@@ -5,7 +5,9 @@ import com.ayush.expense_tracker_system.dto.request.RegisterRequest;
 import com.ayush.expense_tracker_system.dto.response.LoginResponse;
 import com.ayush.expense_tracker_system.dto.response.ProfileResponse;
 import com.ayush.expense_tracker_system.dto.response.RegisterResponse;
+import com.ayush.expense_tracker_system.dto.response.UserResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.EmailAlreadyExistsException;
+import com.ayush.expense_tracker_system.exception.handler.custom.UserNotFoundException;
 import com.ayush.expense_tracker_system.model.CustomUserDetails;
 import com.ayush.expense_tracker_system.model.Role;
 import com.ayush.expense_tracker_system.model.User;
@@ -19,6 +21,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class UserService {
@@ -43,7 +49,7 @@ public class UserService {
                 registerRequest.getEmail(),
                 registerRequest.getName(),
                 passwordEncoder.encode(registerRequest.getPassword()),
-                Role.ROLE_USER
+                Role.USER
         );
 
         User savedUser = userRepository.save(newUser);
@@ -76,5 +82,24 @@ public class UserService {
                 user.getEmail(),
                 user.getRole()
         );
+    }
+
+    public List<UserResponse> getAllUsers(){
+        Iterable<User> userList = userRepository.findAll();
+        return StreamSupport.stream(userList.spliterator(), false)
+                .map( user -> new UserResponse(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getRole()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public void deleteUserById(Long id){
+        if (!userRepository.existsById(id)){
+            throw new UserNotFoundException("user not found");
+        }
+        userRepository.deleteById(id);
     }
 }

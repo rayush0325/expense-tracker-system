@@ -1,7 +1,11 @@
 package com.ayush.expense_tracker_system.dto.response;
 
 import com.ayush.expense_tracker_system.model.Role;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@AllArgsConstructor
+@Getter
 public class UserResponse {
     private Long id;
     private String name;
