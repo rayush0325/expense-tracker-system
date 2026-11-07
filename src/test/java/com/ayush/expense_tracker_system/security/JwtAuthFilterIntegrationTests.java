@@ -27,7 +27,7 @@ public class JwtAuthFilterIntegrationTests {
 
     @Test
     void shouldParseValidToken(){
-        User user = new User("test@mail.com", "tester", "test@123", Role.ROLE_USER);
+        User user = new User("test@mail.com", "tester", "test@123", Role.USER);
         RegisterRequest registerRequest = new RegisterRequest(user.getName(), user.getEmail(), user.getPassword());
         userService.registerUser(registerRequest);
         LoginRequest loginRequest = new LoginRequest(user.getEmail(), user.getPassword());
