@@ -52,8 +52,23 @@ public class CategoryRepositoryTest {
         user2CategoryList.forEach(category -> assertThat(user1SavedCategories.contains(category)).isFalse());
 
 
+    }
+
+    @Test
+    void shouldGetTrueWhenDuplicateCategoryExists(){
+        User user1 = userRepository.save(new User("tester1@mail.com", "tester1", "tester1@123", Role.USER));
+        User user2 = userRepository.save(new User("tester2@mail.com", "tester2", "tester2@123", Role.ADMIN));
 
 
+        List<String> user1CategoryList = List.of("food", "travel");
+        List<String> user2CategoryList = List.of("C2", "C4");
+        List<String> globalCategoryList = List.of("C5", "C7");
 
+        user1CategoryList.forEach(category -> categoryRepository.save(new Category(category, user1)));
+        user2CategoryList.forEach(category -> categoryRepository.save(new Category(category, user2)));
+        globalCategoryList.forEach(category -> categoryRepository.save(new Category(category, null)));
+
+        assertThat(categoryRepository.existsByNameIgnoreCaseAndUser_Id("FOOD", user1.getId())).isTrue();
+        assertThat(categoryRepository.existsByNameIgnoreCaseAndUser_Id("C5", user1.getId())).isFalse();
     }
 }

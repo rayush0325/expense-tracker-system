@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface CategoryRepository extends CrudRepository<Category, Long> {
     Optional<Category> findById(Long id);
     List<Category> findByUserIdOrUserIdIsNull(Long userId);
+
+    boolean existsByNameIgnoreCaseAndUser_Id(String name, Long userId);
+    boolean existsByNameIgnoreCaseAndUserIsNull(String name);
 }
