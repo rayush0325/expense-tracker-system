@@ -71,4 +71,32 @@ public class CategoryRepositoryTest {
         assertThat(categoryRepository.existsByNameIgnoreCaseAndUser_Id("FOOD", user1.getId())).isTrue();
         assertThat(categoryRepository.existsByNameIgnoreCaseAndUser_Id("C5", user1.getId())).isFalse();
     }
+    @Test
+    void shouldReturnPersonalAndGlobalCategories() {
+        User user = userRepository.save(
+                new User("user@mail.com", "user", "password", Role.USER)
+        );
+
+        User anotherUser = userRepository.save(
+                new User("another@mail.com", "another", "password", Role.USER)
+        );
+
+        categoryRepository.save(createCategory("Food", user));
+        categoryRepository.save(createCategory("Travel", null));
+        categoryRepository.save(createCategory("Shopping", anotherUser));
+
+        List<Category> categories =
+                categoryRepository.findByUserIdOrUserIdIsNull(user.getId());
+
+        assertThat(categories)
+                .extracting(Category::getName)
+                .containsExactlyInAnyOrder("Food", "Travel");
+    }
+
+    private Category createCategory(String name, User user) {
+        Category category = new Category();
+        category.setName(name);
+        category.setUser(user);
+        return category;
+    }
 }
