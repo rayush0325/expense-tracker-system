@@ -25,10 +25,12 @@ public class CategoryServiceTest {
 
     private final CategoryService categoryService;
     private final CategoryRepository categoryRepository;
+    private final CurrentUserService currentUserService;
 
     public CategoryServiceTest() {
         this.categoryRepository = mock(CategoryRepository.class);
-        this.categoryService = new CategoryService(categoryRepository);
+        this.currentUserService = mock(CurrentUserService.class);
+        this.categoryService = new CategoryService(categoryRepository, currentUserService);
     }
 
     @AfterEach
@@ -41,6 +43,8 @@ public class CategoryServiceTest {
         User user = new User();
         user.setRole(Role.USER);
         setAuthenticatedUser(user);
+
+        when(currentUserService.getCurrentUser()).thenReturn(user);
 
         CreateCategoryRequest categoryRequest = new CreateCategoryRequest();
         categoryRequest.setName("food");
@@ -60,6 +64,7 @@ public class CategoryServiceTest {
         CreateCategoryRequest categoryRequest = new CreateCategoryRequest();
         categoryRequest.setName("food");
 
+        when(currentUserService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.existsByNameIgnoreCaseAndUser_Id(categoryRequest.getName(), user.getId()))
                 .thenReturn(true);
 
@@ -79,6 +84,7 @@ public class CategoryServiceTest {
         categoryRequest.setName("food");
         categoryRequest.setGlobal(true);
 
+        when(currentUserService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.existsByNameIgnoreCaseAndUserIsNull(categoryRequest.getName()))
                 .thenReturn(true);
 
@@ -97,6 +103,7 @@ public class CategoryServiceTest {
         CreateCategoryRequest categoryRequest = new CreateCategoryRequest();
         categoryRequest.setName("food");
 
+        when(currentUserService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.existsByNameIgnoreCaseAndUser_Id(categoryRequest.getName(), user.getId()))
                 .thenReturn(false);
 
@@ -134,6 +141,7 @@ public class CategoryServiceTest {
         categoryRequest.setName("food");
         categoryRequest.setGlobal(true);
 
+        when(currentUserService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.existsByNameIgnoreCaseAndUserIsNull(categoryRequest.getName()))
                 .thenReturn(false);
 
