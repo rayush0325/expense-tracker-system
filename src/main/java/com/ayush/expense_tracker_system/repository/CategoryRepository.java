@@ -14,4 +14,5 @@ public interface CategoryRepository extends CrudRepository<Category, Long> {
 
     boolean existsByNameIgnoreCaseAndUser_Id(String name, Long userId);
     boolean existsByNameIgnoreCaseAndUserIsNull(String name);
+    boolean existsByNameIgnoreCaseAndUser_IdAndIdNot(String newCategoryName, Long userId, Long categoryId);
 }

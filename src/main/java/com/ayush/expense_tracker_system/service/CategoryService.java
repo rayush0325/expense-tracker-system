@@ -79,7 +79,12 @@ public class CategoryService {
         if (savedCategory.getUser() == null || !savedCategory.getUser().getId().equals(user.getId())) {
             throw new CategoryAccessDeniedException("you are not allowed to update this category");
         }
-        savedCategory.setName(updateCategoryRequest.getName().trim());
+
+        String newCategoryName = updateCategoryRequest.getName().trim();
+        if(categoryRepository.existsByNameIgnoreCaseAndUser_IdAndIdNot(newCategoryName, user.getId(), savedCategory.getId())){
+            throw new CategoryAlreadyExistsException("category with this name already exists");
+        }
+        savedCategory.setName(newCategoryName);
 
         return mapToCategoryResponse(categoryRepository.save(savedCategory));
 
