@@ -1,20 +1,23 @@
 package com.ayush.expense_tracker_system.service;
 
 import com.ayush.expense_tracker_system.dto.request.CreateCategoryRequest;
+import com.ayush.expense_tracker_system.dto.request.UpdateCategoryRequest;
 import com.ayush.expense_tracker_system.dto.response.CategoryResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.CannotCreateGlobalCategoryException;
+import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAccessDeniedException;
 import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAlreadyExistsException;
+import com.ayush.expense_tracker_system.exception.handler.custom.CategoryNotFoundException;
 import com.ayush.expense_tracker_system.model.Category;
-import com.ayush.expense_tracker_system.model.CustomUserDetails;
 import com.ayush.expense_tracker_system.model.Role;
 import com.ayush.expense_tracker_system.model.User;
 import com.ayush.expense_tracker_system.repository.CategoryRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,6 +29,7 @@ public class CategoryServiceTest {
     private final CategoryService categoryService;
     private final CategoryRepository categoryRepository;
     private final CurrentUserService currentUserService;
+    private User user;
 
     public CategoryServiceTest() {
         this.categoryRepository = mock(CategoryRepository.class);
@@ -38,14 +42,16 @@ public class CategoryServiceTest {
         SecurityContextHolder.clearContext();
     }
 
+    @BeforeEach
+    void setup() {
+        user = new User();
+        user.setId(1L);
+        user.setRole(Role.USER);
+        when(currentUserService.getCurrentUser()).thenReturn(user);
+    }
+
     @Test
     void shouldThrowExceptionWhenUserCreatesGlobalCategory() {
-        User user = new User();
-        user.setRole(Role.USER);
-        setAuthenticatedUser(user);
-
-        when(currentUserService.getCurrentUser()).thenReturn(user);
-
         CreateCategoryRequest categoryRequest = new CreateCategoryRequest();
         categoryRequest.setName("food");
         categoryRequest.setGlobal(true);
@@ -55,16 +61,9 @@ public class CategoryServiceTest {
 
     @Test
     void shouldThrowExceptionWhenUserCreatesDuplicatePersonalCategory() {
-        User user = new User();
-        user.setId(1L);
-        user.setRole(Role.USER);
-        setAuthenticatedUser(user);
-
-
         CreateCategoryRequest categoryRequest = new CreateCategoryRequest();
         categoryRequest.setName("food");
 
-        when(currentUserService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.existsByNameIgnoreCaseAndUser_Id(categoryRequest.getName(), user.getId()))
                 .thenReturn(true);
 
@@ -75,16 +74,12 @@ public class CategoryServiceTest {
 
     @Test
     void shouldThrowExceptionWhenAdminCreatesDuplicateGlobalCategory() {
-        User user = new User();
         user.setRole(Role.ADMIN);
-        setAuthenticatedUser(user);
-
 
         CreateCategoryRequest categoryRequest = new CreateCategoryRequest();
         categoryRequest.setName("food");
         categoryRequest.setGlobal(true);
 
-        when(currentUserService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.existsByNameIgnoreCaseAndUserIsNull(categoryRequest.getName()))
                 .thenReturn(true);
 
@@ -94,16 +89,10 @@ public class CategoryServiceTest {
     }
 
     @Test
-    void shouldSaveCategoryWhenUserCreatesNonDuplicateCategory(){
-        User user = new User();
-        user.setId(1L);
-        user.setRole(Role.USER);
-        setAuthenticatedUser(user);
-
+    void shouldSaveCategoryWhenUserCreatesNonDuplicateCategory() {
         CreateCategoryRequest categoryRequest = new CreateCategoryRequest();
         categoryRequest.setName("food");
 
-        when(currentUserService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.existsByNameIgnoreCaseAndUser_Id(categoryRequest.getName(), user.getId()))
                 .thenReturn(false);
 
@@ -114,7 +103,7 @@ public class CategoryServiceTest {
         savedCategory.setUser(user);
 
         ArgumentCaptor<Category> captor = ArgumentCaptor.forClass(Category.class);
-                when(categoryRepository.save(any())).thenReturn(savedCategory);
+        when(categoryRepository.save(any())).thenReturn(savedCategory);
 
 
         CategoryResponse categoryResponse = categoryService.createCategory(categoryRequest);
@@ -131,17 +120,13 @@ public class CategoryServiceTest {
     }
 
     @Test
-    void shouldSaveCategoryWhenAdminCreatesNonDuplicateGlobalCategory(){
-        User user = new User();
-        user.setId(1L);
+    void shouldSaveCategoryWhenAdminCreatesNonDuplicateGlobalCategory() {
         user.setRole(Role.ADMIN);
-        setAuthenticatedUser(user);
 
         CreateCategoryRequest categoryRequest = new CreateCategoryRequest();
         categoryRequest.setName("food");
         categoryRequest.setGlobal(true);
 
-        when(currentUserService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.existsByNameIgnoreCaseAndUserIsNull(categoryRequest.getName()))
                 .thenReturn(false);
 
@@ -157,17 +142,87 @@ public class CategoryServiceTest {
         verify(categoryRepository).save(any());
     }
 
-    private void setAuthenticatedUser(User user) {
-        CustomUserDetails userDetails = new CustomUserDetails(user);
+    @Test
+    void shouldUpdateCategory() {
+        Category savedCategory = new Category();
+        savedCategory.setId(1L);
+        savedCategory.setName("old name");
+        savedCategory.setUser(user);
 
-        Authentication authentication =
-                new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
 
-        SecurityContextHolder.getContext()
-                .setAuthentication(authentication);
+        UpdateCategoryRequest updateCategoryRequest = new UpdateCategoryRequest();
+        updateCategoryRequest.setName(" food ");
+
+        when(categoryRepository.findById(savedCategory.getId()))
+                .thenReturn(Optional.of(savedCategory));
+
+        when(categoryRepository.existsByNameIgnoreCaseAndUser_IdAndIdNot(any(), any(), any()))
+                .thenReturn(false);
+
+        ArgumentCaptor<Category> captor = ArgumentCaptor.forClass(Category.class);
+        when(categoryRepository.save(any())).thenReturn(savedCategory);
+
+        categoryService.updateCategory(savedCategory.getId(), updateCategoryRequest);
+
+        verify(categoryRepository).save(captor.capture());
+        Category updatedCategory = captor.getValue();
+
+        assertThat(updatedCategory.getName()).isEqualTo("food");
+        assertThat(updatedCategory.getId()).isEqualTo(1L);
+        assertThat(updatedCategory.getUser().getId()).isEqualTo(1L);
     }
+
+    @Test
+    void shouldThrowCategoryNotFoundException() {
+        Long categoryId = 1L;
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+
+        assertThrows(CategoryNotFoundException.class, () -> categoryService.updateCategory(categoryId, null));
+        verify(categoryRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowAccessDeniedExceptionForGlobalCategory() {
+        Category savedCategory = new Category();
+        savedCategory.setId(1L);
+        savedCategory.setName("old name");
+        savedCategory.setUser(null);
+
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(savedCategory));
+
+        assertThrows(CategoryAccessDeniedException.class, () -> categoryService.updateCategory(1L, null));
+        verify(categoryRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowAccessDeniedException() {
+        Category savedCategory = new Category();
+        savedCategory.setId(1L);
+        savedCategory.setName("old name");
+        User anotherUser = new User(2L, "tester", "test@mail.com", "test@123", Role.USER);
+        savedCategory.setUser(anotherUser);
+
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(savedCategory));
+
+        assertThrows(CategoryAccessDeniedException.class, () -> categoryService.updateCategory(1L, null));
+        verify(categoryRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowCategoryAlreadyExistsException() {
+        Category savedCategory = new Category();
+        savedCategory.setId(1L);
+        savedCategory.setName("food");
+        savedCategory.setUser(user);
+
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(savedCategory));
+
+        when(categoryRepository.existsByNameIgnoreCaseAndUser_IdAndIdNot("food", 1L, 1L)).thenReturn(true);
+
+        UpdateCategoryRequest updateCategoryRequest = new UpdateCategoryRequest();
+        updateCategoryRequest.setName(" food ");
+        assertThrows(CategoryAlreadyExistsException.class, () -> categoryService.updateCategory(1L, updateCategoryRequest));
+        verify(categoryRepository, never()).save(any());
+    }
+
 }
