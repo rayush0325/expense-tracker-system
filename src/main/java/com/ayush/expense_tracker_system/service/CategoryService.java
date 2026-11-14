@@ -1,9 +1,12 @@
 package com.ayush.expense_tracker_system.service;
 
 import com.ayush.expense_tracker_system.dto.request.CreateCategoryRequest;
+import com.ayush.expense_tracker_system.dto.request.UpdateCategoryRequest;
 import com.ayush.expense_tracker_system.dto.response.CategoryResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.CannotCreateGlobalCategoryException;
+import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAccessDeniedException;
 import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAlreadyExistsException;
+import com.ayush.expense_tracker_system.exception.handler.custom.CategoryNotFoundException;
 import com.ayush.expense_tracker_system.model.Category;
 import com.ayush.expense_tracker_system.model.Role;
 import com.ayush.expense_tracker_system.model.User;
@@ -21,6 +24,15 @@ public class CategoryService {
     public CategoryService(CategoryRepository categoryRepository, CurrentUserService currentUserService) {
         this.categoryRepository = categoryRepository;
         this.currentUserService = currentUserService;
+    }
+
+    private CategoryResponse mapToCategoryResponse(Category category) {
+        Long userId = (category.getUser() != null) ? category.getUser().getId() : null;
+        return new CategoryResponse(
+                category.getId(),
+                category.getName(),
+                userId
+        );
     }
 
     public CategoryResponse createCategory(CreateCategoryRequest categoryRequest) {
@@ -45,11 +57,7 @@ public class CategoryService {
         //create category
         User categoryOwner = categoryRequest.isGlobal() ? null : user;
         Category savedCategory = categoryRepository.save(new Category(categoryName, categoryOwner));
-        return new CategoryResponse(
-                savedCategory.getId(),
-                savedCategory.getName(),
-                savedCategory.getUser() == null ? null : savedCategory.getUser().getId()
-        );
+        return mapToCategoryResponse(savedCategory);
 
     }
 
@@ -60,8 +68,20 @@ public class CategoryService {
 
         return categories.stream()
                 .map(category -> {
-                    Long categoryUserId = category.getUser() == null ? null : category.getUser().getId();
-                    return new CategoryResponse(category.getId(), category.getName(), categoryUserId);
+                    return mapToCategoryResponse(category);
                 }).collect(Collectors.toList());
+    }
+
+    public CategoryResponse updateCategory(Long id, UpdateCategoryRequest updateCategoryRequest) {
+        User user = currentUserService.getCurrentUser();
+        Category savedCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("category not found"));
+        if (savedCategory.getUser() == null || !savedCategory.getUser().getId().equals(user.getId())) {
+            throw new CategoryAccessDeniedException("you are not allowed to update this category");
+        }
+        savedCategory.setName(updateCategoryRequest.getName().trim());
+
+        return mapToCategoryResponse(categoryRepository.save(savedCategory));
+
     }
 }
