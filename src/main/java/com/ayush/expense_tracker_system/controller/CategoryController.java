@@ -1,10 +1,13 @@
 package com.ayush.expense_tracker_system.controller;
 
 import com.ayush.expense_tracker_system.dto.request.CreateCategoryRequest;
+import com.ayush.expense_tracker_system.dto.request.UpdateCategoryRequest;
 import com.ayush.expense_tracker_system.dto.response.CategoryResponse;
 import com.ayush.expense_tracker_system.dto.response.ErrorResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.CannotCreateGlobalCategoryException;
+import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAccessDeniedException;
 import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAlreadyExistsException;
+import com.ayush.expense_tracker_system.exception.handler.custom.CategoryNotFoundException;
 import com.ayush.expense_tracker_system.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -36,6 +39,13 @@ public class CategoryController {
                 .body(categoryService.getAllCategories());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long id, @Valid @RequestBody UpdateCategoryRequest updateCategoryRequest){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(categoryService.updateCategory(id, updateCategoryRequest));
+    }
+
     @ExceptionHandler(CategoryAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateCategoryException(Exception exception){
         return ResponseEntity
@@ -49,4 +59,18 @@ public class CategoryController {
                 .status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse(exception.getMessage()));
     }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException exception){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(exception.getMessage()));
+    }
+    @ExceptionHandler(CategoryAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryAccessDeniedException exception){
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(exception.getMessage()));
+    }
+
 }
