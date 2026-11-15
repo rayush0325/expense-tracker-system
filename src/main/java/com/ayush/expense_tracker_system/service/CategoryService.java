@@ -73,20 +73,38 @@ public class CategoryService {
     }
 
     public CategoryResponse updateCategory(Long id, UpdateCategoryRequest updateCategoryRequest) {
-        User user = currentUserService.getCurrentUser();
-        Category savedCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException("category not found"));
-        if (savedCategory.getUser() == null || !savedCategory.getUser().getId().equals(user.getId())) {
-            throw new CategoryAccessDeniedException("you are not allowed to update this category");
-        }
+        Category savedCategory = getCategoryOrThrow(id);
+
+        validateCategoryOwnership(savedCategory);
 
         String newCategoryName = updateCategoryRequest.getName().trim();
-        if(categoryRepository.existsByNameIgnoreCaseAndUser_IdAndIdNot(newCategoryName, user.getId(), savedCategory.getId())){
+        if (categoryRepository.existsByNameIgnoreCaseAndUser_IdAndIdNot(newCategoryName, user.getId(), savedCategory.getId())) {
             throw new CategoryAlreadyExistsException("category with this name already exists");
         }
         savedCategory.setName(newCategoryName);
 
         return mapToCategoryResponse(categoryRepository.save(savedCategory));
 
+    }
+
+
+    public void deleteCategory(Long id) {
+        Category savedCategory =  getCategoryOrThrow(id);
+
+        validateCategoryOwnership(savedCategory);
+
+        categoryRepository.delete(savedCategory);
+    }
+
+    private Category getCategoryOrThrow(Long id){
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("category not found"));
+    }
+
+    private void validateCategoryOwnership(Category category){
+        User user = currentUserService.getCurrentUser();
+        if (category.getUser() == null || !category.getUser().getId().equals(user.getId())) {
+            throw new CategoryAccessDeniedException("you are not allowed to modify this category");
+        }
     }
 }
