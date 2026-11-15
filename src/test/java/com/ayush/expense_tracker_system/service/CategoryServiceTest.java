@@ -225,4 +225,19 @@ public class CategoryServiceTest {
         verify(categoryRepository, never()).save(any());
     }
 
+    @Test
+    void shouldDeleteCategory(){
+        Category savedCategory = new Category();
+        savedCategory.setId(1L);
+        savedCategory.setName("old name");
+        savedCategory.setUser(user);
+
+        when(categoryRepository.findById(savedCategory.getId()))
+                .thenReturn(Optional.of(savedCategory));
+
+        categoryService.deleteCategory(1L);
+
+        verify(categoryRepository).delete(savedCategory);
+    }
+
 }
