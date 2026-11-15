@@ -67,7 +67,7 @@ public class CategoryController {
                 .body(new ErrorResponse(exception.getMessage()));
     }
     @ExceptionHandler(CategoryAccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryAccessDeniedException exception){
+    public ResponseEntity<ErrorResponse> handleCategoryAccessDeniedException(CategoryAccessDeniedException exception){
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse(exception.getMessage()));
