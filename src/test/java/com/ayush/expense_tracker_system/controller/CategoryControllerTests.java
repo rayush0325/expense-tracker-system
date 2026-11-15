@@ -2,6 +2,7 @@ package com.ayush.expense_tracker_system.controller;
 
 import com.ayush.expense_tracker_system.dto.request.CreateCategoryRequest;
 import com.ayush.expense_tracker_system.dto.request.LoginRequest;
+import com.ayush.expense_tracker_system.dto.request.UpdateCategoryRequest;
 import com.ayush.expense_tracker_system.dto.response.LoginResponse;
 import com.ayush.expense_tracker_system.model.Category;
 import com.ayush.expense_tracker_system.model.Role;
@@ -24,6 +25,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,6 +52,7 @@ public class CategoryControllerTests {
 
     private User user;
     private User admin;
+    private Category userCategory, userCategory2,  adminCategory,  globalCategory;
 
     @BeforeEach
     void setUpRepository() {
@@ -57,7 +60,6 @@ public class CategoryControllerTests {
         admin = new User("admin@mail.com", "admin", "admin@123", Role.ADMIN);
         saveUsers();
         saveCategories();
-
     }
 
 
@@ -70,14 +72,10 @@ public class CategoryControllerTests {
     }
 
     private void saveCategories() {
-
-        List<String> userCategories = List.of("study", "sport");
-        List<String> adminCategories = List.of("gym", "electronics");
-        List<String> globalCategories = List.of("food", "travel");
-
-        userCategories.forEach(categoryName -> categoryRepository.save(new Category(categoryName, user)));
-        adminCategories.forEach(categoryName -> categoryRepository.save(new Category(categoryName, admin)));
-        globalCategories.forEach(categoryName -> categoryRepository.save(new Category(categoryName, null)));
+        userCategory = categoryRepository.save(new Category("study", user));
+        userCategory2 = categoryRepository.save(new Category("travel", user));
+        adminCategory = categoryRepository.save(new Category("gym", admin));
+        globalCategory = categoryRepository.save(new Category("food", null));
     }
 
     private LoginResponse login(User user) throws Exception {
@@ -180,5 +178,103 @@ public class CategoryControllerTests {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.title").value("only admins can create global category"));
         assertThat(categoryRepository.existsByNameIgnoreCaseAndUserIsNull("STUDY")).isFalse();
+    }
+
+    @Test
+    void shouldUpdateCategory() throws Exception {
+        String jwtToken = login(user).getJwtToken();
+
+        UpdateCategoryRequest updateCategoryRequest = new UpdateCategoryRequest();
+        updateCategoryRequest.setName("grocery");
+
+        mockMvc.perform(put(String.format("/api/v1/categories/%d", userCategory.getId()))
+                        .header("Authorization", "Bearer "+jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateCategoryRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userCategory.getId()))
+                .andExpect(jsonPath("$.name").value("grocery"))
+                .andExpect(jsonPath("$.userId").value(user.getId()));
+
+        assertThat(categoryRepository.existsByNameIgnoreCaseAndUser_Id("grocery", user.getId())).isTrue();
+    }
+
+    @Test
+    void shouldThrowCategoryNotFoundException() throws Exception {
+        String jwtToken = login(user).getJwtToken();
+
+        UpdateCategoryRequest updateCategoryRequest = new UpdateCategoryRequest();
+        updateCategoryRequest.setName("grocery");
+
+        mockMvc.perform(put(String.format("/api/v1/categories/%d", 0L))
+                .header("Authorization", "Bearer "+jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateCategoryRequest)))
+                .andExpect(status().is(404))
+                .andExpect(jsonPath("$.title").value("category not found"));
+    }
+
+    @Test
+    void shouldThrowCannotUpdateCategoryException() throws Exception {
+        String jwtToken = login(user).getJwtToken();
+
+        UpdateCategoryRequest updateCategoryRequest = new UpdateCategoryRequest();
+        updateCategoryRequest.setName("grocery");
+
+        mockMvc.perform(put(String.format("/api/v1/categories/%d", adminCategory.getId()))
+                        .header("Authorization", "Bearer "+jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateCategoryRequest)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("you are not allowed to update this category"));
+    }
+
+    @Test
+    void shouldThrowCannotUpdateCategoryExceptionForUpdatingGlobalCategory() throws Exception {
+        String jwtToken = login(admin).getJwtToken();
+
+        UpdateCategoryRequest updateCategoryRequest = new UpdateCategoryRequest();
+        updateCategoryRequest.setName("grocery");
+
+        mockMvc.perform(put(String.format("/api/v1/categories/%d", globalCategory.getId()))
+                        .header("Authorization", "Bearer "+jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateCategoryRequest)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("you are not allowed to update this category"));
+    }
+
+    @Test
+    void shouldThrowCategoryAlreadyExistsException() throws Exception {
+        String jwtToken = login(user).getJwtToken();
+
+        UpdateCategoryRequest updateCategoryRequest = new UpdateCategoryRequest();
+        updateCategoryRequest.setName(" TRAVEL ");
+
+        mockMvc.perform(put(String.format("/api/v1/categories/%d", userCategory.getId()))
+                        .header("Authorization", "Bearer "+jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateCategoryRequest)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.title").value("category with this name already exists"));
+        assertThat(categoryRepository.existsByNameIgnoreCaseAndUser_Id("study", user.getId()));
+    }
+
+    @Test
+    void shouldUpdateCategoryWhenNewNameIsSame() throws Exception {
+        String jwtToken = login(user).getJwtToken();
+
+        UpdateCategoryRequest updateCategoryRequest = new UpdateCategoryRequest();
+        updateCategoryRequest.setName(" STUDY ");
+
+        mockMvc.perform(put(String.format("/api/v1/categories/%d", userCategory.getId()))
+                        .header("Authorization", "Bearer "+jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateCategoryRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userCategory.getId()))
+                .andExpect(jsonPath("$.name").value("STUDY"))
+                .andExpect(jsonPath("$.userId").value(user.getId()));
+        assertThat(categoryRepository.existsByNameIgnoreCaseAndUser_Id("study", user.getId())).isTrue();
     }
 }
