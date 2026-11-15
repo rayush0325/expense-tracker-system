@@ -24,8 +24,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -276,5 +275,18 @@ public class CategoryControllerTests {
                 .andExpect(jsonPath("$.name").value("STUDY"))
                 .andExpect(jsonPath("$.userId").value(user.getId()));
         assertThat(categoryRepository.existsByNameIgnoreCaseAndUser_Id("study", user.getId())).isTrue();
+    }
+
+    @Test
+    void shouldDeleteCategory() throws Exception {
+        String jwtToken = login(user).getJwtToken();
+
+        mockMvc.perform(delete(String.format("/api/v1/categories/%d", userCategory.getId()))
+                        .header("Authorization", "Bearer "+jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        assertThat(categoryRepository.existsByNameIgnoreCaseAndUser_Id(userCategory.getName(), user.getId())).isFalse();
+
     }
 }
