@@ -226,7 +226,7 @@ public class CategoryControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateCategoryRequest)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.title").value("you are not allowed to update this category"));
+                .andExpect(jsonPath("$.title").value("you are not allowed to modify this category"));
     }
 
     @Test
@@ -241,7 +241,7 @@ public class CategoryControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateCategoryRequest)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.title").value("you are not allowed to update this category"));
+                .andExpect(jsonPath("$.title").value("you are not allowed to modify this category"));
     }
 
     @Test
