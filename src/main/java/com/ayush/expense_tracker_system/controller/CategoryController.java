@@ -10,6 +10,7 @@ import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAlready
 import com.ayush.expense_tracker_system.exception.handler.custom.CategoryNotFoundException;
 import com.ayush.expense_tracker_system.service.CategoryService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,14 @@ public class CategoryController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(categoryService.updateCategory(id, updateCategoryRequest));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable @Positive  Long id){
+        categoryService.deleteCategory(id);
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
     @ExceptionHandler(CategoryAlreadyExistsException.class)
