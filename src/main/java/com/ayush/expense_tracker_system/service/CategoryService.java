@@ -73,6 +73,7 @@ public class CategoryService {
     }
 
     public CategoryResponse updateCategory(Long id, UpdateCategoryRequest updateCategoryRequest) {
+        User user = currentUserService.getCurrentUser();
         Category savedCategory = getCategoryOrThrow(id);
 
         validateCategoryOwnership(savedCategory);
