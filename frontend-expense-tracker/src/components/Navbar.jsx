@@ -40,6 +40,7 @@ export function Navbar() {
                                 {user.role === 'ADMIN' && (
                                     <NavLink className="nav-link" to="/admin">Admin-Dashboard</NavLink>
                                 )}
+                                <NavLink className="nav-link" to="/categories" >Categories</NavLink>
                                 <NavLink className="nav-link " to="/profile">Profile({user.name})</NavLink>
                                 <button type="button " onClick={handleLogout} className="btn btn-danger ">Logout</button>
                             </>

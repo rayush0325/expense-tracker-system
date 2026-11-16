@@ -37,7 +37,6 @@ export default function AdminDashboard() {
         console.log(`user with id ${id} is deleted`);
         setUserId(id);
         setShowDialog(true);
-
     }
 
     async function handleConfirmDelete(id) {
