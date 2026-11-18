@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage/LoginPage"
 import ProfilePage from "./pages/ProfilePage"
 import RegisterPage from "./pages/RegisterPage/RegisterPage"
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard"
+import CategoryManagementPage from "./pages/CategoryManagementPage/CategoryManagementPage"
 function App() {
 
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/categories" element={<CategoryManagementPage/>}/>
       </Routes>
     </>
   )

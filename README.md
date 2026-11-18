@@ -36,6 +36,9 @@ A full-stack web application built with **Spring Boot** and **React**. The proje
 - Interactive API documentation using Swagger UI
 - Dockerized backend for deployment
 - frontend is mobile responsive
+- role-based access control
+- ADMIN Role has access to administrative endpoints, including viewing and managing users
+- Uses JWT claims to identify user roles
 
 ## Project Structure
 
@@ -70,6 +73,16 @@ expense-tracker-system/
 
 Protected endpoints require a valid JWT in the `Authorization` header:
 
+### Authorization API Endpoints
+
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| GET | `/api/v1/user/profile` | USER, ADMIN | Access user profile |
+| GET | `/api/v1/admin/users` | ADMIN | Retrieve all users |
+| DELETE | `/api/v1/admin/users/{id}` | ADMIN | Delete a user by ID |
+
+**Authorization:** JWT-based authentication with role-based access control.
+
 ```http
 Authorization: Bearer <your-jwt-token>
 ```
@@ -91,6 +104,14 @@ Start the backend and visit:
 5. Axios attaches the token to subsequent API requests.
 6. The backend validates the token and authenticates requests to protected endpoints.
 7. If an unauthorized response indicates an invalid or expired session, the frontend clears the authentication state and logs the user out.
+
+### Authorization Flow
+
+1. JWT authentication filter validates the token and extracts the user's identity and role.
+2. Spring Security checks whether the user has the required role to access the requested endpoint.
+3. Access is granted if the user is authorized; otherwise:
+   - **401 Unauthorized:** Authentication is missing or invalid.
+   - **403 Forbidden:** Authenticated user does not have the required role.
 
 ## Testing
 
