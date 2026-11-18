@@ -1,23 +1,21 @@
 export default function ConfirmDeleteModal({
-    userId,
-    show,
+    id,
     handleCancel,
     handleConfirmDelete,
     deleting
 }) {
-    if (!show) return null;
     return (
         <div className="position-fixed top-0 start-0 w-100 vh-100
                 bg-dark bg-opacity-50
-                d-flex justify-content-center align-items-center "
+                d-flex justify-content-center align-items-center text-white"
             style={{ zIndex: 1055 }}>
-            <div className="bg-dark border border-white rounded-4 p-4  w-75" z
+            <div className="bg-dark border border-white rounded-4 p-4  w-75" 
                 style={{ maxWidth: "400px" }}>
 
                 <h5>Confirm Deletion</h5>
 
                 <p>
-                    Are you sure you want to delete this user?
+                    Are you sure you want to delete?
                     This action cannot be undone.
                 </p>
 
@@ -28,7 +26,7 @@ export default function ConfirmDeleteModal({
 
                     <button
                         className="btn btn-danger"
-                        onClick={() => { handleConfirmDelete(userId) }}
+                        onClick={() => { handleConfirmDelete(id) }}
                         disabled = {deleting ? true : false}
                     >
                         {deleting ? "DELETING..." : "DELETE"}
