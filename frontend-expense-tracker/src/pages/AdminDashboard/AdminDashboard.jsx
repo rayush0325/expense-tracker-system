@@ -85,12 +85,12 @@ export default function AdminDashboard() {
                         </>
                     )
                 }
-                <ConfirmDeleteModal
+                {showDialog && <ConfirmDeleteModal
                     userId={userId}
                     handleConfirmDelete={handleConfirmDelete}
                     handleCancel={handleCancel}
                     deleting={deleting}
-                />
+                />}
             </div>
         </div>
     )
