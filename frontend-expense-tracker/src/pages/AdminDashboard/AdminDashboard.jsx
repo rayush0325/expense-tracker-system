@@ -37,7 +37,6 @@ export default function AdminDashboard() {
         console.log(`user with id ${id} is deleted`);
         setUserId(id);
         setShowDialog(true);
-
     }
 
     async function handleConfirmDelete(id) {
@@ -86,13 +85,12 @@ export default function AdminDashboard() {
                         </>
                     )
                 }
-                <ConfirmDeleteModal
+                {showDialog && <ConfirmDeleteModal
                     userId={userId}
-                    show={showDialog}
                     handleConfirmDelete={handleConfirmDelete}
                     handleCancel={handleCancel}
                     deleting={deleting}
-                />
+                />}
             </div>
         </div>
     )
