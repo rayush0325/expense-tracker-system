@@ -39,6 +39,9 @@ A full-stack web application built with **Spring Boot** and **React**. The proje
 - role-based access control
 - ADMIN Role has access to administrative endpoints, including viewing and managing users
 - Uses JWT claims to identify user roles
+- Category management with CRUD operations (create, view, update, and delete categories)
+- User-specific categories with ownership-based access control
+- Global categories can be managed by admin only
 
 ## Project Structure
 
@@ -65,11 +68,11 @@ expense-tracker-system/
 
 ## API Endpoints
 
-| Method | Endpoint | Description | Access |
+| Method | Endpoint | Access |Description |
 |---|---|---|---|
-| POST | `/api/v1/user/register` | Register a new user | Public |
-| POST | `/api/v1/user/login` | Authenticate user and obtain JWT | Public |
-| GET | `/api/v1/user/me` | Retrieve authenticated user details | Protected |
+| POST | `/api/v1/user/register` | Public | Register a new user |
+| POST | `/api/v1/user/login` | Public |Authenticate user and obtain JWT |
+| GET | `/api/v1/user/me` | Protected |Retrieve authenticated user details  |
 
 Protected endpoints require a valid JWT in the `Authorization` header:
 
@@ -80,6 +83,15 @@ Protected endpoints require a valid JWT in the `Authorization` header:
 | GET | `/api/v1/user/profile` | USER, ADMIN | Access user profile |
 | GET | `/api/v1/admin/users` | ADMIN | Retrieve all users |
 | DELETE | `/api/v1/admin/users/{id}` | ADMIN | Delete a user by ID |
+
+### Category API Endpoints
+
+| **Method** | **Endpoint**                  | **Access** | **Description**          |
+| ---------- | ----------------------------- | ---------- | ------------------------ |
+| POST       | `/api/v1/category`            | USER       | Create a new category    |
+| GET        | `/api/v1/category`            | USER       | Retrieve all categories  |
+| PUT        | `/api/v1/category/{id}`       | USER       | Update a category        |
+| DELETE     | `/api/v1/category/{id}`      | USER       | Delete a category        |
 
 **Authorization:** JWT-based authentication with role-based access control.
 
@@ -175,10 +187,8 @@ The backend is deployed on Render using docker.
 ## Future Improvements
 
 - Expense CRUD operations
-- Category management
 - Expense filtering and summaries
 - Pagination and additional reporting
-- Deployment and production configuration
 
 ## Project Status
 
