@@ -20,7 +20,7 @@ export default function ConfirmDeleteModal({
                 </p>
 
                 <div className="d-flex justify-content-end gap-2">
-                    <button className="btn btn-secondary" onClick={handleCancel}>
+                    <button className="btn btn-secondary" onClick={handleCancel} disabled={deleting}>
                         Cancel
                     </button>
 
