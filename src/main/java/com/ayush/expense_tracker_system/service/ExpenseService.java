@@ -1,9 +1,12 @@
 package com.ayush.expense_tracker_system.service;
 
 import com.ayush.expense_tracker_system.dto.request.CreateExpenseRequest;
+import com.ayush.expense_tracker_system.dto.request.UpdateExpenseRequest;
 import com.ayush.expense_tracker_system.dto.response.ExpenseResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAccessDeniedException;
 import com.ayush.expense_tracker_system.exception.handler.custom.CategoryNotFoundException;
+import com.ayush.expense_tracker_system.exception.handler.custom.ExpenseAccessDeniedException;
+import com.ayush.expense_tracker_system.exception.handler.custom.ExpenseNotFoundException;
 import com.ayush.expense_tracker_system.model.Category;
 import com.ayush.expense_tracker_system.model.Expense;
 import com.ayush.expense_tracker_system.model.User;
@@ -49,6 +52,33 @@ public class ExpenseService {
 
     }
 
+    public ExpenseResponse updateExpense(UpdateExpenseRequest updateExpenseRequest, Long id){
+
+        Expense selectedExpense = getExpenseOrThrow(id);
+
+        User user = currentUserService.getCurrentUser();
+        validateExpenseAccess(user, selectedExpense);
+
+        if (updateExpenseRequest.getAmount() != null){
+            selectedExpense.setAmount(updateExpenseRequest.getAmount());
+        }
+        if (updateExpenseRequest.getDescription() != null){
+            selectedExpense.setDescription(updateExpenseRequest.getDescription());
+        }
+        if (updateExpenseRequest.getExpenseDate() != null){
+            selectedExpense.setExpenseDate(updateExpenseRequest.getExpenseDate());
+        }
+        if (updateExpenseRequest.getCategoryId() != null){
+            Category newCategory = getCategoryOrThrow(updateExpenseRequest.getCategoryId());
+            validateCategoryAccess(newCategory, user);
+            selectedExpense.setCategory(newCategory);
+        }
+
+        return mapToExpenseResponse(
+                expenseRepository.save(selectedExpense)
+        );
+    }
+
     public List<ExpenseResponse> getAllExpenses(){
         User user = currentUserService.getCurrentUser();
 
@@ -56,7 +86,6 @@ public class ExpenseService {
                 .stream()
                 .map(expense -> mapToExpenseResponse(expense))
                 .toList();
-
     }
 
     private void validateCategoryAccess(Category category, User user) {
@@ -79,5 +108,16 @@ public class ExpenseService {
                 expense.getCategory().getId(),
                 expense.getUser().getId()
         );
+    }
+
+    private Expense getExpenseOrThrow(Long id){
+        return expenseRepository.findById(id)
+                .orElseThrow(() -> new ExpenseNotFoundException("expense not found"));
+    }
+
+    private void validateExpenseAccess(User user, Expense expense){
+        if (!expense.getUser().getId().equals(user.getId())){
+            throw new ExpenseAccessDeniedException("expense access denied");
+        }
     }
 }
