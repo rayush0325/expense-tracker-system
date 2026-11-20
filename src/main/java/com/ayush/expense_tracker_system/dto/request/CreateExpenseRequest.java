@@ -26,7 +26,6 @@ public class CreateExpenseRequest {
     @Positive(message = "category must be positive")
     private Long categoryId;
 
-    @NotNull(message = "expense date cannot be null")
     @PastOrPresent(message = "expense date cannot be in future")
     private LocalDate expenseDate;
 }

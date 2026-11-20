@@ -38,4 +38,12 @@ public class Expense {
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
+    public Expense(String description, BigDecimal amount, LocalDate expenseDate, Category category, User user) {
+        this.description = description;
+        this.amount = amount;
+        this.expenseDate = expenseDate;
+        this.category = category;
+        this.user = user;
+    }
 }
