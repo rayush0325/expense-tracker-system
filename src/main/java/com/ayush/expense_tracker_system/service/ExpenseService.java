@@ -12,6 +12,7 @@ import com.ayush.expense_tracker_system.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ExpenseService {
@@ -45,6 +46,16 @@ public class ExpenseService {
         );
 
         return mapToExpenseResponse(expenseRepository.save(expense));
+
+    }
+
+    public List<ExpenseResponse> getAllExpenses(){
+        User user = currentUserService.getCurrentUser();
+
+        return expenseRepository.findByUserId(user.getId())
+                .stream()
+                .map(expense -> mapToExpenseResponse(expense))
+                .toList();
 
     }
 
