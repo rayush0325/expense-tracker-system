@@ -88,6 +88,13 @@ public class ExpenseService {
                 .toList();
     }
 
+    public void deleteExpense(Long id){
+        Expense selectedExpense = getExpenseOrThrow(id);
+        validateExpenseAccess(currentUserService.getCurrentUser(), selectedExpense);
+
+        expenseRepository.delete(selectedExpense);
+    }
+
     private void validateCategoryAccess(Category category, User user) {
         if (category.getUser() != null && !category.getUser().getId().equals(user.getId())) {
             throw new CategoryAccessDeniedException("you are not allowed to access this category");
