@@ -97,7 +97,7 @@ public class ExpenseService {
 
     private void validateCategoryAccess(Category category, User user) {
         if (category.getUser() != null && !category.getUser().getId().equals(user.getId())) {
-            throw new CategoryAccessDeniedException("you are not allowed to access this category");
+            throw new CategoryAccessDeniedException("category access denied");
         }
     }
 
