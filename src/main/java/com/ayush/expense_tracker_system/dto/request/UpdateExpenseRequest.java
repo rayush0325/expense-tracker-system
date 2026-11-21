@@ -1,7 +1,7 @@
 package com.ayush.expense_tracker_system.dto.request;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ public class UpdateExpenseRequest {
     @Positive(message = "amount cannot be negative")
     private BigDecimal amount;
 
-    @NotEmpty(message = "description cannot be empty")
+    @Pattern(regexp = "^(?!\\s*$).+",message = "description cannot be empty")
     private String description;
 
     @PastOrPresent(message = "expense date cannot be in future")
