@@ -4,13 +4,14 @@ import { AuthContext } from "../context/AuthContext";
 import { UserContext } from "../context/UserContext";
 export function Navbar() {
     const { loggedIn, logout } = useContext(AuthContext);
-
+    
     function handleLogout() {
         logout();
     }
     const { user } = useContext(UserContext);
+    console.log(`inside navbar user role = ${user.role}`);
     return (
-        <nav className="navbar navbar-expand-lg bg-body-tertiary">
+        <nav className="navbar navbar-expand-lg bg-dark-subtle ">
             <div className="container-fluid">
                 <Link className="navbar-brand" to="/">Expense Tracker</Link>
                 <button
@@ -31,9 +32,7 @@ export function Navbar() {
                         {!loggedIn && (
                             <>
                                 <NavLink className="nav-link" to="/register">Register</NavLink>
-                                <NavLink className="nav-link" to="/login">Login</NavLink>
-
-                            </>
+                                <NavLink className="nav-link" to="/login">Login</NavLink>                            </>
                         )
                         }
                         {loggedIn && (
@@ -41,6 +40,7 @@ export function Navbar() {
                                 {user.role === 'ADMIN' && (
                                     <NavLink className="nav-link" to="/admin">Admin-Dashboard</NavLink>
                                 )}
+                                <NavLink className="nav-link" to="/expenses" >Expenses</NavLink>
                                 <NavLink className="nav-link" to="/categories" >Categories</NavLink>
                                 <NavLink className="nav-link " to="/profile">Profile({user.name})</NavLink>
                                 <button type="button " onClick={handleLogout} className="btn btn-danger ">Logout</button>

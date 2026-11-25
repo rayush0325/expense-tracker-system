@@ -86,7 +86,7 @@ export default function AdminDashboard() {
                     )
                 }
                 {showDialog && <ConfirmDeleteModal
-                    userId={userId}
+                    id={userId}
                     handleConfirmDelete={handleConfirmDelete}
                     handleCancel={handleCancel}
                     deleting={deleting}
