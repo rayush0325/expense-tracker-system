@@ -42,6 +42,12 @@ A full-stack web application built with **Spring Boot** and **React**. The proje
 - Category management with CRUD operations (create, view, update, and delete categories)
 - User-specific categories with ownership-based access control
 - Global categories can be managed by admin only
+- Users can create, view, update, and delete their expenses.
+- Each expense is associated with a user and a category.
+- Users can access and manage only their own expenses.
+- Expenses can be associated with user-specific or global categories.
+- Category ownership and access are validated when creating or updating expenses.
+
 
 ## Project Structure
 
@@ -92,6 +98,16 @@ Protected endpoints require a valid JWT in the `Authorization` header:
 | GET        | `/api/v1/category`            | USER       | Retrieve all categories  |
 | PUT        | `/api/v1/category/{id}`       | USER       | Update a category        |
 | DELETE     | `/api/v1/category/{id}`      | USER       | Delete a category        |
+
+### Expense API Endpoints
+
+| **Method** | **Endpoint**                  | **Access** | **Description**          |
+| ---------- | ----------------------------- | ---------- | ------------------------ |
+| POST       | `/api/v1/expense`             | USER       | Create a new expense     |
+| GET        | `/api/v1/expense`             | USER       | Retrieve all expenses    |
+| PUT        | `/api/v1/expense/{id}`        | USER       | Update an existing expense |
+| DELETE     | `/api/v1/expense/{id}`        | USER       | Delete an expense        |
+
 
 **Authorization:** JWT-based authentication with role-based access control.
 
