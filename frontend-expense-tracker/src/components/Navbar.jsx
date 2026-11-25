@@ -4,11 +4,12 @@ import { AuthContext } from "../context/AuthContext";
 import { UserContext } from "../context/UserContext";
 export function Navbar() {
     const { loggedIn, logout } = useContext(AuthContext);
-
+    
     function handleLogout() {
         logout();
     }
     const { user } = useContext(UserContext);
+    console.log(`inside navbar user role = ${user.role}`);
     return (
         <nav className="navbar navbar-expand-lg bg-dark-subtle ">
             <div className="container-fluid">
@@ -31,9 +32,7 @@ export function Navbar() {
                         {!loggedIn && (
                             <>
                                 <NavLink className="nav-link" to="/register">Register</NavLink>
-                                <NavLink className="nav-link" to="/login">Login</NavLink>
-
-                            </>
+                                <NavLink className="nav-link" to="/login">Login</NavLink>                            </>
                         )
                         }
                         {loggedIn && (

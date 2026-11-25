@@ -6,8 +6,6 @@ import LoginPage from "./pages/LoginPage/LoginPage"
 import ProfilePage from "./pages/ProfilePage"
 import RegisterPage from "./pages/RegisterPage/RegisterPage"
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard"
-import CategoryManagementPage from "./pages/CategoryManagementPage/CategoryManagementPage"
-import ExpenseManagementPage from "./pages/ExpenseManagementPage"
 function App() {
 
   return (
