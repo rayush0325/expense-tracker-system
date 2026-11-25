@@ -113,6 +113,7 @@ public class ExpenseService {
                 expense.getDescription(),
                 expense.getExpenseDate(),
                 expense.getCategory().getId(),
+                expense.getCategory().getName(),
                 expense.getUser().getId()
         );
     }

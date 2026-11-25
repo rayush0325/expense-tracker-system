@@ -14,5 +14,6 @@ public class ExpenseResponse {
     private String description;
     private LocalDate expenseDate;
     private Long categoryId;
+    private String categoryName;
     private Long userId;
 }
