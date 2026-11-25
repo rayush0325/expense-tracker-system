@@ -1,6 +1,8 @@
 package com.ayush.expense_tracker_system.exception.handler;
 
 import com.ayush.expense_tracker_system.dto.response.ErrorResponse;
+import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAccessDeniedException;
+import com.ayush.expense_tracker_system.exception.handler.custom.CategoryNotFoundException;
 import com.ayush.expense_tracker_system.exception.handler.custom.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException exception){
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(exception.getMessage()));
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException exception){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(exception.getMessage()));
+    }
+    @ExceptionHandler(CategoryAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryAccessDeniedException(CategoryAccessDeniedException exception){
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse(exception.getMessage()));
     }
 }

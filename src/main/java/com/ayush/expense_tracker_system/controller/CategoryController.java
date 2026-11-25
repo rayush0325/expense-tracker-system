@@ -5,9 +5,7 @@ import com.ayush.expense_tracker_system.dto.request.UpdateCategoryRequest;
 import com.ayush.expense_tracker_system.dto.response.CategoryResponse;
 import com.ayush.expense_tracker_system.dto.response.ErrorResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.CannotCreateGlobalCategoryException;
-import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAccessDeniedException;
 import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAlreadyExistsException;
-import com.ayush.expense_tracker_system.exception.handler.custom.CategoryNotFoundException;
 import com.ayush.expense_tracker_system.service.CategoryService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -69,17 +67,6 @@ public class CategoryController {
                 .body(new ErrorResponse(exception.getMessage()));
     }
 
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException exception){
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(exception.getMessage()));
-    }
-    @ExceptionHandler(CategoryAccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleCategoryAccessDeniedException(CategoryAccessDeniedException exception){
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponse(exception.getMessage()));
-    }
+
 
 }

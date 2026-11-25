@@ -10,7 +10,7 @@ export function Navbar() {
     }
     const { user } = useContext(UserContext);
     return (
-        <nav className="navbar navbar-expand-lg bg-body-tertiary">
+        <nav className="navbar navbar-expand-lg bg-dark-subtle ">
             <div className="container-fluid">
                 <Link className="navbar-brand" to="/">Expense Tracker</Link>
                 <button
@@ -41,6 +41,7 @@ export function Navbar() {
                                 {user.role === 'ADMIN' && (
                                     <NavLink className="nav-link" to="/admin">Admin-Dashboard</NavLink>
                                 )}
+                                <NavLink className="nav-link" to="/expenses" >Expenses</NavLink>
                                 <NavLink className="nav-link" to="/categories" >Categories</NavLink>
                                 <NavLink className="nav-link " to="/profile">Profile({user.name})</NavLink>
                                 <button type="button " onClick={handleLogout} className="btn btn-danger ">Logout</button>
