@@ -7,6 +7,7 @@ import ProfilePage from "./pages/ProfilePage"
 import RegisterPage from "./pages/RegisterPage/RegisterPage"
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard"
 import CategoryManagementPage from "./pages/CategoryManagementPage/CategoryManagementPage"
+import ExpenseManagementPage from "./pages/ExpenseManagementPage"
 function App() {
 
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/categories" element={<CategoryManagementPage/>}/>
+        <Route path="/expenses" element={<ExpenseManagementPage/>}/>
       </Routes>
     </>
   )
