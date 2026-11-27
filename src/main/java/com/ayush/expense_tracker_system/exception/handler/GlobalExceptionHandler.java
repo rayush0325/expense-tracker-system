@@ -3,6 +3,7 @@ package com.ayush.expense_tracker_system.exception.handler;
 import com.ayush.expense_tracker_system.dto.response.ErrorResponse;
 import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAccessDeniedException;
 import com.ayush.expense_tracker_system.exception.handler.custom.CategoryNotFoundException;
+import com.ayush.expense_tracker_system.exception.handler.custom.InvalidDateRangeException;
 import com.ayush.expense_tracker_system.exception.handler.custom.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +57,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleCategoryAccessDeniedException(CategoryAccessDeniedException exception){
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(exception.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidDateRangeException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidDateRangeException(InvalidDateRangeException exception){
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(exception.getMessage()));
     }
 }

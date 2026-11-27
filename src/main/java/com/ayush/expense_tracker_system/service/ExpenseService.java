@@ -1,21 +1,20 @@
 package com.ayush.expense_tracker_system.service;
 
 import com.ayush.expense_tracker_system.dto.request.CreateExpenseRequest;
+import com.ayush.expense_tracker_system.dto.request.ExpenseFilterRequest;
 import com.ayush.expense_tracker_system.dto.request.UpdateExpenseRequest;
 import com.ayush.expense_tracker_system.dto.response.ExpenseResponse;
-import com.ayush.expense_tracker_system.exception.handler.custom.CategoryAccessDeniedException;
-import com.ayush.expense_tracker_system.exception.handler.custom.CategoryNotFoundException;
-import com.ayush.expense_tracker_system.exception.handler.custom.ExpenseAccessDeniedException;
-import com.ayush.expense_tracker_system.exception.handler.custom.ExpenseNotFoundException;
+import com.ayush.expense_tracker_system.exception.handler.custom.*;
 import com.ayush.expense_tracker_system.model.Category;
 import com.ayush.expense_tracker_system.model.Expense;
 import com.ayush.expense_tracker_system.model.User;
 import com.ayush.expense_tracker_system.repository.CategoryRepository;
 import com.ayush.expense_tracker_system.repository.ExpenseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ExpenseService {
@@ -35,7 +34,7 @@ public class ExpenseService {
         validateCategoryAccess(selectedCategory, currentUser);
 
         LocalDate expenseDate = createExpenseRequest.getExpenseDate();
-        if(expenseDate == null){
+        if (expenseDate == null) {
             expenseDate = LocalDate.now();
         }
 
@@ -52,23 +51,23 @@ public class ExpenseService {
 
     }
 
-    public ExpenseResponse updateExpense(UpdateExpenseRequest updateExpenseRequest, Long id){
+    public ExpenseResponse updateExpense(UpdateExpenseRequest updateExpenseRequest, Long id) {
 
         Expense selectedExpense = getExpenseOrThrow(id);
 
         User user = currentUserService.getCurrentUser();
         validateExpenseAccess(user, selectedExpense);
 
-        if (updateExpenseRequest.getAmount() != null){
+        if (updateExpenseRequest.getAmount() != null) {
             selectedExpense.setAmount(updateExpenseRequest.getAmount());
         }
-        if (updateExpenseRequest.getDescription() != null){
+        if (updateExpenseRequest.getDescription() != null) {
             selectedExpense.setDescription(updateExpenseRequest.getDescription());
         }
-        if (updateExpenseRequest.getExpenseDate() != null){
+        if (updateExpenseRequest.getExpenseDate() != null) {
             selectedExpense.setExpenseDate(updateExpenseRequest.getExpenseDate());
         }
-        if (updateExpenseRequest.getCategoryId() != null){
+        if (updateExpenseRequest.getCategoryId() != null) {
             Category newCategory = getCategoryOrThrow(updateExpenseRequest.getCategoryId());
             validateCategoryAccess(newCategory, user);
             selectedExpense.setCategory(newCategory);
@@ -79,16 +78,30 @@ public class ExpenseService {
         );
     }
 
-    public List<ExpenseResponse> getAllExpenses(){
+    public Page<ExpenseResponse> getExpenses(Pageable pageable, ExpenseFilterRequest expenseFilterRequest) {
         User user = currentUserService.getCurrentUser();
+        if (expenseFilterRequest.getCategoryId() != null) {
+            Category category = getCategoryOrThrow(expenseFilterRequest.getCategoryId());
+            validateCategoryAccess(category, user);
+        }
+        LocalDate from = expenseFilterRequest.getFrom(), to = expenseFilterRequest.getTo();
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new InvalidDateRangeException("from is after to");
+        }
 
-        return expenseRepository.findByUserId(user.getId())
-                .stream()
-                .map(expense -> mapToExpenseResponse(expense))
-                .toList();
+        return expenseRepository.filterExpenses(
+                        pageable,
+                        user.getId(),
+                        expenseFilterRequest.getCategoryId(),
+                        expenseFilterRequest.getFrom(),
+                        expenseFilterRequest.getTo()
+                )
+                .map(expense -> mapToExpenseResponse(expense));
+
+
     }
 
-    public void deleteExpense(Long id){
+    public void deleteExpense(Long id) {
         Expense selectedExpense = getExpenseOrThrow(id);
         validateExpenseAccess(currentUserService.getCurrentUser(), selectedExpense);
 
@@ -106,7 +119,7 @@ public class ExpenseService {
                 .orElseThrow(() -> new CategoryNotFoundException("category not found"));
     }
 
-    private ExpenseResponse mapToExpenseResponse(Expense expense){
+    private ExpenseResponse mapToExpenseResponse(Expense expense) {
         return new ExpenseResponse(
                 expense.getId(),
                 expense.getAmount(),
@@ -118,13 +131,13 @@ public class ExpenseService {
         );
     }
 
-    private Expense getExpenseOrThrow(Long id){
+    private Expense getExpenseOrThrow(Long id) {
         return expenseRepository.findById(id)
                 .orElseThrow(() -> new ExpenseNotFoundException("expense not found"));
     }
 
-    private void validateExpenseAccess(User user, Expense expense){
-        if (!expense.getUser().getId().equals(user.getId())){
+    private void validateExpenseAccess(User user, Expense expense) {
+        if (!expense.getUser().getId().equals(user.getId())) {
             throw new ExpenseAccessDeniedException("expense access denied");
         }
     }

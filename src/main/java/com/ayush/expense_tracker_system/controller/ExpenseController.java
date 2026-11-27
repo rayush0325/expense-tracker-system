@@ -1,6 +1,7 @@
 package com.ayush.expense_tracker_system.controller;
 
 import com.ayush.expense_tracker_system.dto.request.CreateExpenseRequest;
+import com.ayush.expense_tracker_system.dto.request.ExpenseFilterRequest;
 import com.ayush.expense_tracker_system.dto.request.UpdateExpenseRequest;
 import com.ayush.expense_tracker_system.dto.response.ErrorResponse;
 import com.ayush.expense_tracker_system.dto.response.ExpenseResponse;
@@ -8,11 +9,11 @@ import com.ayush.expense_tracker_system.exception.handler.custom.ExpenseAccessDe
 import com.ayush.expense_tracker_system.exception.handler.custom.ExpenseNotFoundException;
 import com.ayush.expense_tracker_system.service.ExpenseService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/expenses")
@@ -31,10 +32,10 @@ public class ExpenseController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<ExpenseResponse>> getAllExpenses(){
+    public ResponseEntity<Page<ExpenseResponse>> getExpenses(Pageable pageable, @Valid @ModelAttribute ExpenseFilterRequest expenseFilterRequest){
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(expenseService.getAllExpenses());
+                .body(expenseService.getExpenses(pageable, expenseFilterRequest));
     }
 
     @PutMapping("/{id}")
